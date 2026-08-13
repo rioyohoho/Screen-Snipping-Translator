@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  async function translateText(text, lang = 'vi') {
+  async function translateText(text, lang = 'en') {
     if (!text?.trim()) return '';
     try {
       const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${lang}&dt=t&q=${encodeURIComponent(text)}`);
