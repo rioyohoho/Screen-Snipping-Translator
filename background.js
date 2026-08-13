@@ -1,0 +1,1 @@
+chrome.sidePanel.setPanelBehavior({openPanelOnActionClick:!0}).catch(console.error),chrome.runtime.onMessage.addListener((r,e,a)=>{if("capture_tab"===r.action){const r=e?.tab?.windowId;return chrome.tabs.captureVisibleTab(r,{format:"png"},r=>{chrome.runtime.lastError?a({dataUrl:null,error:chrome.runtime.lastError.message}):a({dataUrl:r})}),!0}});
