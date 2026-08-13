@@ -10,7 +10,7 @@
   }
 
   document.addEventListener('keydown', (e) => {
-    if (e.shiftKey && (e.key === 'T' || e.key === 't' || e.key === 'R' || e.key === 'r')) {
+    if (e.altKey && (e.key === 'T' || e.key === 't' || e.key === 'R' || e.key === 'r')) {
       e.preventDefault();
       startSnipping();
     }
