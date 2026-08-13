@@ -1,1 +1,144 @@
-document.addEventListener("DOMContentLoaded",()=>{const e=e=>document.getElementById(e),a=e("targetLang"),t=(e("ocrSpinner"),e("spinnerText"),e("sourceText")),l=e("translatedText"),n=e("btnManualTranslate"),r=e("btnClear"),o=e("btnCopySource"),s=e("btnCopyTrans"),c=e("configForm"),i=e("checkSaveData"),v=e("checkShowFrom"),u=e("cfgBgType"),g=e("boxBgColor"),d=e("boxBgGradient"),m=e("boxBgImage"),f=e("cfgBgColor"),p=e("cfgBgAlpha"),y=e("lblAlphaVal"),h=e("cfgGradStart"),b=e("cfgGradEnd"),L=e("cfgGradAngle"),E=e("cfgBgImageUrl"),S=e("cfgFontSelect"),T=e("cfgFontCustom"),x=e("cfgFontSizeNum"),C=e("cfgFontSizeRange"),A=e("cfgTextColor"),F=e("cfgBorderColor"),k=e("cfgBorderRadius"),w=e("cfgOcrKey");function I(){const e={bgType:u.value,bgColor:f.value,bgAlpha:parseFloat(p.value),gradStart:h.value,gradEnd:b.value,gradAngle:parseInt(L.value)||135,bgImageUrl:E.value.trim(),textColor:A.value,borderColor:F.value,radius:parseInt(k.value)||10,fontSize:parseInt(x.value)||13,fontFamily:"custom"===S.value?T.value||"sans-serif":S.value};chrome.storage.local.set({saveData:i.checked,showFrom:v.checked,ocrApiKey:w?w.value.trim():"",toastStyle:e,targetLang:a.value})}async function B(e,a="vi"){if(!e?.trim())return"";try{const t=await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${a}&dt=t&q=${encodeURIComponent(e)}`);return(await t.json())[0].map(e=>e[0]).join("")}catch{return"Translation error!"}}document.querySelectorAll(".nav-link").forEach(a=>{a.addEventListener("click",()=>{document.querySelectorAll(".nav-link").forEach(e=>e.classList.remove("active")),document.querySelectorAll(".tab-pane").forEach(e=>{e.classList.remove("active"),e.style.display="none"}),a.classList.add("active");const t=e(a.dataset.target);t&&(t.classList.add("active"),t.style.display="block")})}),u.addEventListener("change",()=>{g.classList.toggle("d-none","color"!==u.value),d.classList.toggle("d-none","gradient"!==u.value),m.classList.toggle("d-none","image"!==u.value),I()}),p.addEventListener("input",()=>{y.innerText=p.value,I()}),x.addEventListener("input",()=>{C.value=x.value,I()}),C.addEventListener("input",()=>{x.value=C.value,I()}),S.addEventListener("change",()=>{T.classList.toggle("d-none","custom"!==S.value),I()}),[i,v,f,h,b,L,E,T,A,F,k].forEach(e=>{e&&(e.addEventListener("input",I),e.addEventListener("change",I))}),chrome.storage.local.get(null,e=>{if(e.ocrApiKey&&(w.value=e.ocrApiKey),e.targetLang&&(a.value=e.targetLang),void 0!==e.saveData&&(i.checked=e.saveData),void 0!==e.showFrom&&(v.checked=e.showFrom),e.toastStyle){const a=e.toastStyle;a.bgType&&(u.value=a.bgType,u.dispatchEvent(new Event("change"))),a.bgColor&&(f.value=a.bgColor),void 0!==a.bgAlpha&&(p.value=a.bgAlpha,y.innerText=a.bgAlpha),a.gradStart&&(h.value=a.gradStart),a.gradEnd&&(b.value=a.gradEnd),a.gradAngle&&(L.value=a.gradAngle),a.bgImageUrl&&(E.value=a.bgImageUrl),a.textColor&&(A.value=a.textColor),a.borderColor&&(F.value=a.borderColor),void 0!==a.radius&&(k.value=a.radius),a.fontSize&&(x.value=a.fontSize,C.value=a.fontSize),a.fontFamily&&(["Arial, sans-serif","'Segoe UI', sans-serif","Roboto, sans-serif","'Georgia', serif","monospace"].includes(a.fontFamily)?S.value=a.fontFamily:(S.value="custom",T.classList.remove("d-none"),T.value=a.fontFamily))}!1!==e.saveData&&(e.lastSourceText&&(t.value=e.lastSourceText),e.lastTransText&&(l.value=e.lastTransText))}),a.addEventListener("change",async()=>{I(),t.value.trim()&&(l.value="Translating...",l.value=await B(t.value,a.value))}),n.addEventListener("click",async()=>{t.value.trim()&&(l.value="Translating...",l.value=await B(t.value,a.value))}),r.addEventListener("click",()=>{t.value="",l.value="",chrome.storage.local.remove(["lastSourceText","lastTransText"])}),o.addEventListener("click",()=>t.value&&navigator.clipboard.writeText(t.value)),s.addEventListener("click",()=>l.value&&navigator.clipboard.writeText(l.value)),c.addEventListener("submit",e=>{e.preventDefault(),I(),notify.notifyAction("Settings saved successfully!","success",3e3)})});
+document.addEventListener('DOMContentLoaded', () => {
+  const $ = id => document.getElementById(id);
+
+  const targetLang = $('targetLang'), ocrSpinner = $('ocrSpinner'),
+        spinnerText = $('spinnerText'), sourceText = $('sourceText'),
+        translatedText = $('translatedText'), btnManualTranslate = $('btnManualTranslate'),
+        btnClear = $('btnClear'), btnCopySource = $('btnCopySource'), btnCopyTrans = $('btnCopyTrans'),
+        configForm = $('configForm'), checkSaveData = $('checkSaveData'), checkShowFrom = $('checkShowFrom'),
+        cfgBgType = $('cfgBgType'), boxBgColor = $('boxBgColor'), boxBgGradient = $('boxBgGradient'),
+        boxBgImage = $('boxBgImage'), cfgBgColor = $('cfgBgColor'), cfgBgAlpha = $('cfgBgAlpha'),
+        lblAlphaVal = $('lblAlphaVal'), cfgGradStart = $('cfgGradStart'), cfgGradEnd = $('cfgGradEnd'),
+        cfgGradAngle = $('cfgGradAngle'), cfgBgImageUrl = $('cfgBgImageUrl'), cfgFontSelect = $('cfgFontSelect'),
+        cfgFontCustom = $('cfgFontCustom'), cfgFontSizeNum = $('cfgFontSizeNum'), cfgFontSizeRange = $('cfgFontSizeRange'),
+        cfgTextColor = $('cfgTextColor'), cfgBorderColor = $('cfgBorderColor'), cfgBorderRadius = $('cfgBorderRadius'),
+        cfgOcrKey = $('cfgOcrKey');
+
+  // Navigation Tabs
+  document.querySelectorAll('.nav-link').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-pane').forEach(p => {
+        p.classList.remove('active');
+        p.style.display = 'none';
+      });
+      
+      btn.classList.add('active');
+      const target = $(btn.dataset.target);
+      if (target) {
+        target.classList.add('active');
+        target.style.display = 'block';
+      }
+    });
+  });
+
+  // Controls Event Listeners
+  cfgBgType.addEventListener('change', () => {
+    boxBgColor.classList.toggle('d-none', cfgBgType.value !== 'color');
+    boxBgGradient.classList.toggle('d-none', cfgBgType.value !== 'gradient');
+    boxBgImage.classList.toggle('d-none', cfgBgType.value !== 'image');
+    saveConfigLive();
+  });
+
+  cfgBgAlpha.addEventListener('input', () => { lblAlphaVal.innerText = cfgBgAlpha.value; saveConfigLive(); });
+  cfgFontSizeNum.addEventListener('input', () => { cfgFontSizeRange.value = cfgFontSizeNum.value; saveConfigLive(); });
+  cfgFontSizeRange.addEventListener('input', () => { cfgFontSizeNum.value = cfgFontSizeRange.value; saveConfigLive(); });
+  cfgFontSelect.addEventListener('change', () => {
+    cfgFontCustom.classList.toggle('d-none', cfgFontSelect.value !== 'custom');
+    saveConfigLive();
+  });
+
+  function saveConfigLive() {
+    const toastStyle = {
+      bgType: cfgBgType.value, bgColor: cfgBgColor.value, bgAlpha: parseFloat(cfgBgAlpha.value),
+      gradStart: cfgGradStart.value, gradEnd: cfgGradEnd.value, gradAngle: parseInt(cfgGradAngle.value) || 135,
+      bgImageUrl: cfgBgImageUrl.value.trim(), textColor: cfgTextColor.value, borderColor: cfgBorderColor.value,
+      radius: parseInt(cfgBorderRadius.value) || 10, fontSize: parseInt(cfgFontSizeNum.value) || 13,
+      fontFamily: cfgFontSelect.value === 'custom' ? (cfgFontCustom.value || 'sans-serif') : cfgFontSelect.value
+    };
+
+    chrome.storage.local.set({
+      saveData: checkSaveData.checked,
+      showFrom: checkShowFrom.checked,
+      ocrApiKey: cfgOcrKey ? cfgOcrKey.value.trim() : '',
+      toastStyle, targetLang: targetLang.value
+    });
+  }
+
+  [checkSaveData, checkShowFrom, cfgBgColor, cfgGradStart, cfgGradEnd, cfgGradAngle, cfgBgImageUrl, cfgFontCustom, cfgTextColor, cfgBorderColor, cfgBorderRadius].forEach(el => {
+    if (el) {
+      el.addEventListener('input', saveConfigLive);
+      el.addEventListener('change', saveConfigLive);
+    }
+  });
+
+  async function translateText(text, lang = 'vi') {
+    if (!text?.trim()) return '';
+    try {
+      const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${lang}&dt=t&q=${encodeURIComponent(text)}`);
+      const data = await res.json();
+      return data[0].map(item => item[0]).join('');
+    } catch { return "Translation error!"; }
+  }
+
+  // Load Saved Storage Configs
+  chrome.storage.local.get(null, (data) => {
+    if (data.ocrApiKey) cfgOcrKey.value = data.ocrApiKey;
+    if (data.targetLang) targetLang.value = data.targetLang;
+    if (data.saveData !== undefined) checkSaveData.checked = data.saveData;
+    if (data.showFrom !== undefined) checkShowFrom.checked = data.showFrom;
+
+    if (data.toastStyle) {
+      const ts = data.toastStyle;
+      if (ts.bgType) { cfgBgType.value = ts.bgType; cfgBgType.dispatchEvent(new Event('change')); }
+      if (ts.bgColor) cfgBgColor.value = ts.bgColor;
+      if (ts.bgAlpha !== undefined) { cfgBgAlpha.value = ts.bgAlpha; lblAlphaVal.innerText = ts.bgAlpha; }
+      if (ts.gradStart) cfgGradStart.value = ts.gradStart;
+      if (ts.gradEnd) cfgGradEnd.value = ts.gradEnd;
+      if (ts.gradAngle) cfgGradAngle.value = ts.gradAngle;
+      if (ts.bgImageUrl) cfgBgImageUrl.value = ts.bgImageUrl;
+      if (ts.textColor) cfgTextColor.value = ts.textColor;
+      if (ts.borderColor) cfgBorderColor.value = ts.borderColor;
+      if (ts.radius !== undefined) cfgBorderRadius.value = ts.radius;
+      if (ts.fontSize) { cfgFontSizeNum.value = ts.fontSize; cfgFontSizeRange.value = ts.fontSize; }
+      if (ts.fontFamily) {
+        if (['Arial, sans-serif', "'Segoe UI', sans-serif", 'Roboto, sans-serif', "'Georgia', serif", 'monospace'].includes(ts.fontFamily)) {
+          cfgFontSelect.value = ts.fontFamily;
+        } else {
+          cfgFontSelect.value = 'custom';
+          cfgFontCustom.classList.remove('d-none');
+          cfgFontCustom.value = ts.fontFamily;
+        }
+      }
+    }
+
+    if (data.saveData !== false) {
+      if (data.lastSourceText) sourceText.value = data.lastSourceText;
+      if (data.lastTransText) translatedText.value = data.lastTransText;
+    }
+  });
+
+  targetLang.addEventListener('change', async () => {
+    saveConfigLive();
+    if (sourceText.value.trim()) {
+      translatedText.value = "Translating...";
+      translatedText.value = await translateText(sourceText.value, targetLang.value);
+    }
+  });
+
+  btnManualTranslate.addEventListener('click', async () => {
+    if (sourceText.value.trim()) {
+      translatedText.value = "Translating...";
+      translatedText.value = await translateText(sourceText.value, targetLang.value);
+    }
+  });
+
+  btnClear.addEventListener('click', () => {
+    sourceText.value = ""; translatedText.value = "";
+    chrome.storage.local.remove(['lastSourceText', 'lastTransText']);
+  });
+
+  btnCopySource.addEventListener('click', () => sourceText.value && navigator.clipboard.writeText(sourceText.value));
+  btnCopyTrans.addEventListener('click', () => translatedText.value && navigator.clipboard.writeText(translatedText.value));
+  configForm.addEventListener('submit', (e) => { e.preventDefault(); saveConfigLive(); notify.notifyAction("Settings saved successfully!", 'success', 3e3); });
+});
