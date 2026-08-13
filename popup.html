@@ -59,15 +59,28 @@
     <!-- TRANSLATE TAB -->
     <div class="tab-pane active" id="pane-view" style="display: block;">
       <div class="card-panel">
-        <div class="d-flex align-items-center justify-content-between">
-          <span class="fw-bold text-muted small">Target Language</span>
-          <select class="form-select form-select-sm w-auto fw-bold text-primary" id="targetLang">
-            <option value="vi" selected>🇻🇳 Vietnamese</option>
-            <option value="en">🇺🇸 English</option>
-            <option value="zh-CN">🇨🇳 Chinese</option>
-            <option value="ja">🇯🇵 Japanese</option>
-            <option value="ko">🇰🇷 Korean</option>
-          </select>
+        <div class="row g-2">
+          <div class="col-6">
+            <label class="fw-bold text-muted small d-block mb-1">From</label>
+            <select class="form-select form-select-sm fw-bold text-secondary" id="sourceLang">
+              <option value="auto" selected>🌐 Auto Detect</option>
+              <option value="en">🇺🇸 English</option>
+              <option value="vi">🇻🇳 Vietnamese</option>
+              <option value="zh-CN">🇨🇳 Chinese</option>
+              <option value="ja">🇯🇵 Japanese</option>
+              <option value="ko">🇰🇷 Korean</option>
+            </select>
+          </div>
+          <div class="col-6">
+            <label class="fw-bold text-muted small d-block mb-1">To</label>
+            <select class="form-select form-select-sm fw-bold text-primary" id="targetLang">
+              <option value="vi" selected>🇻🇳 Vietnamese</option>
+              <option value="en">🇺🇸 English</option>
+              <option value="zh-CN">🇨🇳 Chinese</option>
+              <option value="ja">🇯🇵 Japanese</option>
+              <option value="ko">🇰🇷 Korean</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -142,12 +155,24 @@
           </div>
 
           <div id="boxBgImage" class="p-2 border rounded bg-light mb-2 d-none">
-            <input type="text" class="form-control form-control-sm" id="cfgBgImageUrl" placeholder="url...">
+            <input type="text" class="form-control form-control-sm" id="cfgBgImageUrl" placeholder="Image URL (https://...)">
           </div>
         </div>
 
         <div class="card-panel">
-          <h6 class="fw-bold text-primary mb-2">Typography & Border</h6>
+          <h6 class="fw-bold text-primary mb-2">Uniform Color & Border</h6>
+          
+          <div class="row g-2 mb-2">
+            <div class="col-6">
+              <label class="small text-muted fw-bold">All Text Color</label>
+              <input type="color" class="form-control form-control-color w-100" id="cfgTextColor" value="#0f172a">
+            </div>
+            <div class="col-6">
+              <label class="small text-muted fw-bold">All Border Color</label>
+              <input type="color" class="form-control form-control-color w-100" id="cfgBorderColor" value="#4f46e5">
+            </div>
+          </div>
+
           <div class="mb-2">
             <label class="small text-muted fw-bold">Font Family</label>
             <select class="form-select" id="cfgFontSelect">
@@ -161,26 +186,15 @@
             <input type="text" class="form-control mt-1 d-none" id="cfgFontCustom" placeholder="Font name (e.g., 'Inter')">
           </div>
 
-          <div class="mb-2">
-            <div class="d-flex justify-content-between">
-              <label class="small text-muted fw-bold">Font Size (px)</label>
-              <input type="number" class="form-control form-control-sm text-center fw-bold text-primary" id="cfgFontSizeNum" style="width: 50px;" value="13">
+          <div class="row g-2 align-items-center">
+            <div class="col-6">
+              <label class="small text-muted fw-bold">Font Size (<span id="lblFontSizeVal" class="text-primary">13</span>px)</label>
+              <input type="range" class="form-range" id="cfgFontSizeRange" min="10" max="24" value="13">
+              <input type="hidden" id="cfgFontSizeNum" value="13">
             </div>
-            <input type="range" class="form-range" id="cfgFontSizeRange" min="10" max="28" value="13">
-          </div>
-
-          <div class="row g-2">
-            <div class="col-4">
-              <label class="small text-muted fw-bold">Color</label>
-              <input type="color" class="form-control form-control-color w-100" id="cfgTextColor" value="#0f172a">
-            </div>
-            <div class="col-4">
-              <label class="small text-muted fw-bold">Border</label>
-              <input type="color" class="form-control form-control-color w-100" id="cfgBorderColor" value="#4f46e5">
-            </div>
-            <div class="col-4">
-              <label class="small text-muted fw-bold">Radius</label>
-              <input type="number" class="form-control form-control-sm" id="cfgBorderRadius" value="10">
+            <div class="col-6">
+              <label class="small text-muted fw-bold">Corner Radius (px)</label>
+              <input type="number" class="form-control form-control-sm" id="cfgBorderRadius" value="10" min="0" max="30">
             </div>
           </div>
         </div>
@@ -198,7 +212,7 @@
     <div class="tab-pane" id="pane-info" style="display: none;">
       <div class="card-panel text-center py-4">
         <div class="mb-2">
-          <span class="badge bg-primary fs-6 px-3 py-2 rounded-pill">Version 1.1</span>
+          <span class="badge bg-primary fs-6 px-3 py-2 rounded-pill">Version 1.2</span>
         </div>
         <h6 class="fw-bold mt-2">Screen Snipping Translator</h6>
         <p class="text-muted small mb-0">The most powerful screen area capture & instant translator extension for your browser.</p>
