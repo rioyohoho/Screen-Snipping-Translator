@@ -228,7 +228,7 @@
     }
   }
 
-  async function translateInPage(text, targetLang = 'vi') {
+  async function translateInPage(text, targetLang = 'en') {
     if (!text?.trim()) return '';
     try {
       const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`);
@@ -299,7 +299,7 @@
               return;
             }
 
-            const translated = await translateInPage(sourceText, config?.targetLang || 'vi');
+            const translated = await translateInPage(sourceText, config?.targetLang || 'en');
             if (statusEl) statusEl.style.display = 'none';
             if (resultEl) resultEl.style.display = 'flex';
 
