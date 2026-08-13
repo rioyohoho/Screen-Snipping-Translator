@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const $ = id => document.getElementById(id);
 
-  const targetLang = $('targetLang'), ocrSpinner = $('ocrSpinner'),
+  const sourceLang = $('sourceLang'), targetLang = $('targetLang'), ocrSpinner = $('ocrSpinner'),
         spinnerText = $('spinnerText'), sourceText = $('sourceText'),
         translatedText = $('translatedText'), btnManualTranslate = $('btnManualTranslate'),
         btnClear = $('btnClear'), btnCopySource = $('btnCopySource'), btnCopyTrans = $('btnCopyTrans'),
@@ -11,8 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
         lblAlphaVal = $('lblAlphaVal'), cfgGradStart = $('cfgGradStart'), cfgGradEnd = $('cfgGradEnd'),
         cfgGradAngle = $('cfgGradAngle'), cfgBgImageUrl = $('cfgBgImageUrl'), cfgFontSelect = $('cfgFontSelect'),
         cfgFontCustom = $('cfgFontCustom'), cfgFontSizeNum = $('cfgFontSizeNum'), cfgFontSizeRange = $('cfgFontSizeRange'),
-        cfgTextColor = $('cfgTextColor'), cfgBorderColor = $('cfgBorderColor'), cfgBorderRadius = $('cfgBorderRadius'),
-        cfgOcrKey = $('cfgOcrKey');
+        lblFontSizeVal = $('lblFontSizeVal'), cfgTextColor = $('cfgTextColor'), cfgBorderColor = $('cfgBorderColor'),
+        cfgBorderRadius = $('cfgBorderRadius'), cfgOcrKey = $('cfgOcrKey');
 
   // Navigation Tabs
   document.querySelectorAll('.nav-link').forEach(btn => {
@@ -41,8 +41,13 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   cfgBgAlpha.addEventListener('input', () => { lblAlphaVal.innerText = cfgBgAlpha.value; saveConfigLive(); });
-  cfgFontSizeNum.addEventListener('input', () => { cfgFontSizeRange.value = cfgFontSizeNum.value; saveConfigLive(); });
-  cfgFontSizeRange.addEventListener('input', () => { cfgFontSizeNum.value = cfgFontSizeRange.value; saveConfigLive(); });
+  
+  cfgFontSizeRange.addEventListener('input', () => { 
+    cfgFontSizeNum.value = cfgFontSizeRange.value; 
+    if (lblFontSizeVal) lblFontSizeVal.innerText = cfgFontSizeRange.value;
+    saveConfigLive(); 
+  });
+
   cfgFontSelect.addEventListener('change', () => {
     cfgFontCustom.classList.toggle('d-none', cfgFontSelect.value !== 'custom');
     saveConfigLive();
@@ -53,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
       bgType: cfgBgType.value, bgColor: cfgBgColor.value, bgAlpha: parseFloat(cfgBgAlpha.value),
       gradStart: cfgGradStart.value, gradEnd: cfgGradEnd.value, gradAngle: parseInt(cfgGradAngle.value) || 135,
       bgImageUrl: cfgBgImageUrl.value.trim(), textColor: cfgTextColor.value, borderColor: cfgBorderColor.value,
-      radius: parseInt(cfgBorderRadius.value) || 10, fontSize: parseInt(cfgFontSizeNum.value) || 13,
+      radius: parseInt(cfgBorderRadius.value) || 10, fontSize: parseInt(cfgFontSizeRange.value) || 13,
       fontFamily: cfgFontSelect.value === 'custom' ? (cfgFontCustom.value || 'sans-serif') : cfgFontSelect.value
     };
 
@@ -61,7 +66,9 @@ document.addEventListener('DOMContentLoaded', () => {
       saveData: checkSaveData.checked,
       showFrom: checkShowFrom.checked,
       ocrApiKey: cfgOcrKey ? cfgOcrKey.value.trim() : '',
-      toastStyle, targetLang: targetLang.value
+      toastStyle,
+      sourceLang: sourceLang.value || 'auto',
+      targetLang: targetLang.value || 'vi'
     });
   }
 
@@ -72,10 +79,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  async function translateText(text, lang = 'en') {
+  async function translateText(text, target = 'vi', source = 'auto') {
     if (!text?.trim()) return '';
     try {
-      const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${lang}&dt=t&q=${encodeURIComponent(text)}`);
+      const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${encodeURIComponent(source || 'auto')}&tl=${encodeURIComponent(target || 'vi')}&dt=t&q=${encodeURIComponent(text)}`);
       const data = await res.json();
       return data[0].map(item => item[0]).join('');
     } catch { return "Translation error!"; }
@@ -84,6 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Load Saved Storage Configs
   chrome.storage.local.get(null, (data) => {
     if (data.ocrApiKey) cfgOcrKey.value = data.ocrApiKey;
+    if (data.sourceLang) sourceLang.value = data.sourceLang;
     if (data.targetLang) targetLang.value = data.targetLang;
     if (data.saveData !== undefined) checkSaveData.checked = data.saveData;
     if (data.showFrom !== undefined) checkShowFrom.checked = data.showFrom;
@@ -100,7 +108,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if (ts.textColor) cfgTextColor.value = ts.textColor;
       if (ts.borderColor) cfgBorderColor.value = ts.borderColor;
       if (ts.radius !== undefined) cfgBorderRadius.value = ts.radius;
-      if (ts.fontSize) { cfgFontSizeNum.value = ts.fontSize; cfgFontSizeRange.value = ts.fontSize; }
+      if (ts.fontSize) { 
+        cfgFontSizeRange.value = ts.fontSize; 
+        cfgFontSizeNum.value = ts.fontSize;
+        if (lblFontSizeVal) lblFontSizeVal.innerText = ts.fontSize;
+      }
       if (ts.fontFamily) {
         if (['Arial, sans-serif', "'Segoe UI', sans-serif", 'Roboto, sans-serif', "'Georgia', serif", 'monospace'].includes(ts.fontFamily)) {
           cfgFontSelect.value = ts.fontFamily;
@@ -118,18 +130,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  sourceLang.addEventListener('change', async () => {
+    saveConfigLive();
+    if (sourceText.value.trim()) {
+      translatedText.value = "Translating...";
+      translatedText.value = await translateText(sourceText.value, targetLang.value, sourceLang.value);
+    }
+  });
+
   targetLang.addEventListener('change', async () => {
     saveConfigLive();
     if (sourceText.value.trim()) {
       translatedText.value = "Translating...";
-      translatedText.value = await translateText(sourceText.value, targetLang.value);
+      translatedText.value = await translateText(sourceText.value, targetLang.value, sourceLang.value);
     }
   });
 
   btnManualTranslate.addEventListener('click', async () => {
     if (sourceText.value.trim()) {
       translatedText.value = "Translating...";
-      translatedText.value = await translateText(sourceText.value, targetLang.value);
+      translatedText.value = await translateText(sourceText.value, targetLang.value, sourceLang.value);
     }
   });
 
