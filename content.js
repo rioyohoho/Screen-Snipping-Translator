@@ -93,35 +93,54 @@
     let toast = document.getElementById('trans-floating-toast');
     if (!toast) return;
 
-    chrome.storage.local.get(['targetLang', 'showFrom', 'toastStyle'], async (config) => {
+    chrome.storage.local.get(['sourceLang', 'targetLang', 'showFrom', 'toastStyle'], async (config) => {
       const ts = config.toastStyle || {};
+      const color = ts.textColor || '#0f172a';
+      const border = ts.borderColor || '#4f46e5';
+      const font = ts.fontFamily || 'sans-serif';
+      const size = (ts.fontSize || 13) + 'px';
+
       toast.style.background = generateBackgroundStyle(ts);
-      if (ts.textColor) toast.style.color = ts.textColor;
-      if (ts.borderColor) {
-        toast.style.borderColor = ts.borderColor;
-        let title = toast.querySelector('#toast-drag-header strong');
-        if (title) title.style.color = ts.borderColor;
-      }
+      toast.style.color = color;
+      toast.style.borderColor = border;
+      toast.style.fontFamily = font;
+      toast.style.fontSize = size;
       if (ts.radius !== undefined) toast.style.borderRadius = ts.radius + 'px';
-      if (ts.fontSize) {
-        toast.style.fontSize = ts.fontSize + 'px';
-        toast.querySelectorAll('textarea').forEach(ta => ta.style.fontSize = ts.fontSize + 'px');
-      }
-      if (ts.fontFamily) {
-        toast.style.fontFamily = ts.fontFamily;
-        toast.querySelectorAll('textarea').forEach(ta => ta.style.fontFamily = ts.fontFamily);
-      }
+
+      // Cập nhật toàn bộ thành phần con đồng nhất màu sắc & viền
+      toast.querySelectorAll('.toast-theme-color').forEach(el => el.style.color = color);
+      toast.querySelectorAll('.toast-theme-border').forEach(el => el.style.borderColor = border);
+      toast.querySelectorAll('textarea, select').forEach(el => {
+        el.style.color = color;
+        el.style.borderColor = border;
+        el.style.fontFamily = font;
+        el.style.fontSize = size;
+      });
+
+      let header = toast.querySelector('#toast-drag-header');
+      if (header) header.style.borderBottomColor = border;
 
       let fromBox = toast.querySelector('#toast-from-container');
       if (fromBox) fromBox.style.display = (config.showFrom === false) ? 'none' : 'flex';
 
-      let langSelect = toast.querySelector('#toast-lang-select');
-      if (langSelect && config.targetLang && langSelect.value !== config.targetLang) {
-        langSelect.value = config.targetLang;
+      let fromLangSelect = toast.querySelector('#toast-from-lang-select');
+      let toLangSelect = toast.querySelector('#toast-to-lang-select');
+
+      let needRetranslate = false;
+      if (fromLangSelect && config.sourceLang && fromLangSelect.value !== config.sourceLang) {
+        fromLangSelect.value = config.sourceLang;
+        needRetranslate = true;
+      }
+      if (toLangSelect && config.targetLang && toLangSelect.value !== config.targetLang) {
+        toLangSelect.value = config.targetLang;
+        needRetranslate = true;
+      }
+
+      if (needRetranslate) {
         let fromTa = toast.querySelector('#toast-from-text'), toTa = toast.querySelector('#toast-to-text');
         if (fromTa?.value && toTa) {
           toTa.value = "Translating...";
-          toTa.value = await translateInPage(fromTa.value, config.targetLang);
+          toTa.value = await translateInPage(fromTa.value, config.targetLang || 'vi', config.sourceLang || 'auto');
         }
       }
     });
@@ -134,51 +153,77 @@
     let toast = document.createElement('div');
     toast.id = 'trans-floating-toast';
 
-    let posX = Math.max(10, Math.min(x, window.innerWidth - 350));
+    let posX = Math.max(10, Math.min(x, window.innerWidth - 380));
     let posY = (y + height + 250 > window.innerHeight) ? Math.max(10, y - 240) : y + height + 10;
 
     const ts = config.toastStyle || {};
     const bgStyle = generateBackgroundStyle(ts);
+    const color = ts.textColor || '#0f172a';
     const border = ts.borderColor || '#4f46e5';
+    const font = ts.fontFamily || 'sans-serif';
+    const fontSize = ts.fontSize || 13;
+    const sLang = config.sourceLang || 'auto';
+    const tLang = config.targetLang || 'vi';
 
     toast.style.cssText = `
-      position: fixed; left: ${posX}px; top: ${posY}px; width: 340px; min-width: 260px;
-      background: ${bgStyle}; color: ${ts.textColor || '#0f172a'};
+      position: fixed; left: ${posX}px; top: ${posY}px; width: 360px; min-width: 280px;
+      background: ${bgStyle}; color: ${color};
       border: 1.5px solid ${border}; border-radius: ${ts.radius ?? 10}px;
-      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.2); padding: 12px;
-      z-index: 2147483647; font-family: ${ts.fontFamily || 'sans-serif'}; font-size: ${ts.fontSize || 13}px;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.25); padding: 12px;
+      z-index: 2147483647; font-family: ${font}; font-size: ${fontSize}px;
       display: flex; flex-direction: column; gap: 8px; resize: both; overflow: auto;
     `;
 
+    // Style dùng chung cho Textarea & Select (kính mờ, ăn theo text color và border color)
+    const inputStyle = `
+      width: 100%; border: 1px solid ${border}; border-radius: 6px; padding: 6px;
+      font-size: inherit; font-family: inherit; color: ${color};
+      background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(4px); box-sizing: border-box; outline: none;
+    `;
+
+    const selectStyle = `
+      font-size: 11px; padding: 2px 4px; border-radius: 6px; border: 1px solid ${border};
+      background: rgba(255, 255, 255, 0.35); color: ${color}; font-family: inherit; outline: none;
+    `;
+
     toast.innerHTML = `
-      <div id="toast-drag-header" style="display:flex; justify-content:space-between; align-items:center; cursor:move; user-select:none; border-bottom:1px solid rgba(0,0,0,0.08); padding-bottom:6px;">
-        <strong style="color:${border}; font-size:12px; display:flex; align-items:center; gap:4px;">🌐 Translator Pro</strong>
-        <div style="display:flex; align-items:center; gap:8px; margin-left:auto;">
-          <select id="toast-lang-select" style="font-size:11px; padding:2px 6px; border-radius:6px; border:1px solid #ccc; background:#fff;">
-            <option value="vi" ${config.targetLang === 'vi' ? 'selected' : ''}>Vietnamese</option>
-            <option value="en" ${config.targetLang === 'en' ? 'selected' : ''}>English</option>
-            <option value="zh-CN" ${config.targetLang === 'zh-CN' ? 'selected' : ''}>Chinese</option>
-            <option value="ja" ${config.targetLang === 'ja' ? 'selected' : ''}>Japanese</option>
-            <option value="ko" ${config.targetLang === 'ko' ? 'selected' : ''}>Korean</option>
+      <div id="toast-drag-header" class="toast-theme-border" style="display:flex; justify-content:space-between; align-items:center; cursor:move; user-select:none; border-bottom:1px solid ${border}; padding-bottom:6px; flex-wrap:wrap; gap:4px;">
+        <strong class="toast-theme-color" style="color:${color}; font-size:12px; display:flex; align-items:center; gap:4px;">🌐 Translator Pro</strong>
+        <div style="display:flex; align-items:center; gap:4px; margin-left:auto;">
+          <select id="toast-from-lang-select" style="${selectStyle} max-width:85px;">
+            <option value="auto" ${sLang === 'auto' ? 'selected' : ''}>Auto</option>
+            <option value="en" ${sLang === 'en' ? 'selected' : ''}>English</option>
+            <option value="vi" ${sLang === 'vi' ? 'selected' : ''}>Vietnamese</option>
+            <option value="zh-CN" ${sLang === 'zh-CN' ? 'selected' : ''}>Chinese</option>
+            <option value="ja" ${sLang === 'ja' ? 'selected' : ''}>Japanese</option>
+            <option value="ko" ${sLang === 'ko' ? 'selected' : ''}>Korean</option>
           </select>
-          <span id="close-trans-toast" style="cursor:pointer; font-size:16px; font-weight:bold; color:#94a3b8;">&times;</span>
+          <span class="toast-theme-color" style="font-size:10px; color:${color}; opacity:0.8;">→</span>
+          <select id="toast-to-lang-select" style="${selectStyle} max-width:95px;">
+            <option value="vi" ${tLang === 'vi' ? 'selected' : ''}>Vietnamese</option>
+            <option value="en" ${tLang === 'en' ? 'selected' : ''}>English</option>
+            <option value="zh-CN" ${tLang === 'zh-CN' ? 'selected' : ''}>Chinese</option>
+            <option value="ja" ${tLang === 'ja' ? 'selected' : ''}>Japanese</option>
+            <option value="ko" ${tLang === 'ko' ? 'selected' : ''}>Korean</option>
+          </select>
+          <span id="close-trans-toast" class="toast-theme-color" style="cursor:pointer; font-size:16px; font-weight:bold; color:${color}; margin-left:4px; opacity:0.8;">&times;</span>
         </div>
       </div>
-      <div id="toast-status" style="color:#64748b; font-size:12px;">Scanning text & translating...</div>
+      <div id="toast-status" class="toast-theme-color" style="color:${color}; font-size:12px; opacity:0.85;">Scanning text & translating...</div>
       <div id="toast-result" style="display:none; flex-direction:column; gap:8px; flex-grow:1;">
         <div id="toast-from-container" style="display:${config.showFrom === false ? 'none' : 'flex'}; flex-direction:column;">
-          <div style="display:flex; justify-content:space-between; font-size:11px; color:#64748b; margin-bottom:2px;">
-            <span>Source text:</span>
-            <span id="btn-copy-from" style="cursor:pointer; color:${border}; font-weight:bold;">📋 Copy</span>
+          <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:2px;">
+            <span class="toast-theme-color" style="color:${color}; font-weight:500;">Source text:</span>
+            <span id="btn-copy-from" class="toast-theme-color" style="cursor:pointer; color:${color}; font-weight:bold;">📋 Copy</span>
           </div>
-          <textarea id="toast-from-text" style="width:100%; height:45px; border:1px solid #cbd5e1; border-radius:6px; padding:4px; font-size:inherit; font-family:inherit; background:rgba(255,255,255,0.8);"></textarea>
+          <textarea id="toast-from-text" style="${inputStyle} height:48px;"></textarea>
         </div>
         <div style="display:flex; flex-direction:column; flex-grow:1;">
-          <div style="display:flex; justify-content:space-between; font-size:11px; color:#15803d; margin-bottom:2px;">
-            <strong>Translation:</strong>
-            <span id="btn-copy-to" style="cursor:pointer; color:${border}; font-weight:bold;">📋 Copy</span>
+          <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:2px;">
+            <span class="toast-theme-color" style="color:${color}; font-weight:bold;">Translation:</span>
+            <span id="btn-copy-to" class="toast-theme-color" style="cursor:pointer; color:${color}; font-weight:bold;">📋 Copy</span>
           </div>
-          <textarea id="toast-to-text" style="width:100%; height:55px; border:1px solid #86efac; border-radius:6px; padding:4px; font-size:inherit; font-family:inherit; font-weight:600; color:#14532d; background:rgba(240,253,244,0.9);"></textarea>
+          <textarea id="toast-to-text" style="${inputStyle} height:58px; font-weight:600;"></textarea>
         </div>
       </div>
     `;
@@ -190,15 +235,19 @@
     toast.querySelector('#btn-copy-from').onclick = () => navigator.clipboard.writeText(toast.querySelector('#toast-from-text').value);
     toast.querySelector('#btn-copy-to').onclick = () => navigator.clipboard.writeText(toast.querySelector('#toast-to-text').value);
 
-    toast.querySelector('#toast-lang-select').addEventListener('change', async (e) => {
-      const newLang = e.target.value;
-      if (isContextValid()) chrome.storage.local.set({ targetLang: newLang });
+    async function triggerToastTranslation() {
+      const fromLangVal = toast.querySelector('#toast-from-lang-select').value;
+      const toLangVal = toast.querySelector('#toast-to-lang-select').value;
+      if (isContextValid()) chrome.storage.local.set({ sourceLang: fromLangVal, targetLang: toLangVal });
       const fromVal = toast.querySelector('#toast-from-text').value;
       if (fromVal.trim()) {
         toast.querySelector('#toast-to-text').value = "Translating...";
-        toast.querySelector('#toast-to-text').value = await translateInPage(fromVal, newLang);
+        toast.querySelector('#toast-to-text').value = await translateInPage(fromVal, toLangVal, fromLangVal);
       }
-    });
+    }
+
+    toast.querySelector('#toast-from-lang-select').addEventListener('change', triggerToastTranslation);
+    toast.querySelector('#toast-to-lang-select').addEventListener('change', triggerToastTranslation);
 
     return toast;
   }
@@ -228,10 +277,10 @@
     }
   }
 
-  async function translateInPage(text, targetLang = 'en') {
+  async function translateInPage(text, targetLang = 'vi', sourceLang = 'auto') {
     if (!text?.trim()) return '';
     try {
-      const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`);
+      const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${encodeURIComponent(sourceLang || 'auto')}&tl=${encodeURIComponent(targetLang || 'vi')}&dt=t&q=${encodeURIComponent(text)}`);
       const data = await res.json();
       return data[0].map(item => item[0]).join('');
     } catch { return "Translation connection error!"; }
@@ -265,7 +314,7 @@
     }
 
     try {
-      chrome.storage.local.get(['targetLang', 'saveData', 'showFrom', 'toastStyle', 'ocrApiKey'], (config) => {
+      chrome.storage.local.get(['sourceLang', 'targetLang', 'saveData', 'showFrom', 'toastStyle', 'ocrApiKey'], (config) => {
         if (!isContextValid()) return;
 
         showFloatingToast(rect.x, rect.y, rect.width, rect.height, config || {});
@@ -299,7 +348,7 @@
               return;
             }
 
-            const translated = await translateInPage(sourceText, config?.targetLang || 'en');
+            const translated = await translateInPage(sourceText, config?.targetLang || 'vi', config?.sourceLang || 'auto');
             if (statusEl) statusEl.style.display = 'none';
             if (resultEl) resultEl.style.display = 'flex';
 
