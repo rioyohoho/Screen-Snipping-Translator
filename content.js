@@ -1,1 +1,323 @@
-!function(){let e,t,n,o,a,r,i=!1;function s(){try{return!!(chrome&&chrome.runtime&&chrome.runtime.id)}catch(e){return!1}}function l(n){i=!0,e=n.clientX,t=n.clientY,Object.assign(r.style,{left:`${e}px`,top:`${t}px`,width:"0px",height:"0px",display:"block"})}function d(a){if(!i)return;n=a.clientX,o=a.clientY;let s=Math.abs(n-e),l=Math.abs(o-t),d=Math.min(e,n),c=Math.min(t,o);Object.assign(r.style,{left:`${d}px`,top:`${c}px`,width:`${s}px`,height:`${l}px`})}async function c(n){if(!i)return;i=!1;let o={x:Math.min(e,n.clientX),y:Math.min(t,n.clientY),width:Math.abs(n.clientX-e),height:Math.abs(n.clientY-t),dpr:window.devicePixelRatio||1};a?.remove(),o.width>10&&o.height>10&&function(e){if(!s())return void notify.notifyAction("Extension context was reloaded.\nPlease refresh (F5) the webpage to continue!","warning",3e3);try{chrome.storage.local.get(["targetLang","saveData","showFrom","toastStyle","ocrApiKey"],t=>{s()&&(!function(e,t,n,o,a){let r=document.getElementById("trans-floating-toast");r&&r.remove();let i=document.createElement("div");i.id="trans-floating-toast";let l=Math.max(10,Math.min(e,window.innerWidth-350)),d=t+o+250>window.innerHeight?Math.max(10,t-240):t+o+10;const c=a.toastStyle||{},g=p(c),f=c.borderColor||"#4f46e5";i.style.cssText=`\n      position: fixed; left: ${l}px; top: ${d}px; width: 340px; min-width: 260px;\n      background: ${g}; color: ${c.textColor||"#0f172a"};\n      border: 1.5px solid ${f}; border-radius: ${c.radius??10}px;\n      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.2); padding: 12px;\n      z-index: 2147483647; font-family: ${c.fontFamily||"sans-serif"}; font-size: ${c.fontSize||13}px;\n      display: flex; flex-direction: column; gap: 8px; resize: both; overflow: auto;\n    `,i.innerHTML=`\n      <div id="toast-drag-header" style="display:flex; justify-content:space-between; align-items:center; cursor:move; user-select:none; border-bottom:1px solid rgba(0,0,0,0.08); padding-bottom:6px;">\n        <strong style="color:${f}; font-size:12px; display:flex; align-items:center; gap:4px;">🌐 Translator Pro</strong>\n        <div style="display:flex; align-items:center; gap:8px; margin-left:auto;">\n          <select id="toast-lang-select" style="font-size:11px; padding:2px 6px; border-radius:6px; border:1px solid #ccc; background:#fff;">\n            <option value="vi" ${"vi"===a.targetLang?"selected":""}>Vietnamese</option>\n            <option value="en" ${"en"===a.targetLang?"selected":""}>English</option>\n            <option value="zh-CN" ${"zh-CN"===a.targetLang?"selected":""}>Chinese</option>\n            <option value="ja" ${"ja"===a.targetLang?"selected":""}>Japanese</option>\n            <option value="ko" ${"ko"===a.targetLang?"selected":""}>Korean</option>\n          </select>\n          <span id="close-trans-toast" style="cursor:pointer; font-size:16px; font-weight:bold; color:#94a3b8;">&times;</span>\n        </div>\n      </div>\n      <div id="toast-status" style="color:#64748b; font-size:12px;">Scanning text & translating...</div>\n      <div id="toast-result" style="display:none; flex-direction:column; gap:8px; flex-grow:1;">\n        <div id="toast-from-container" style="display:${!1===a.showFrom?"none":"flex"}; flex-direction:column;">\n          <div style="display:flex; justify-content:space-between; font-size:11px; color:#64748b; margin-bottom:2px;">\n            <span>Source text:</span>\n            <span id="btn-copy-from" style="cursor:pointer; color:${f}; font-weight:bold;">📋 Copy</span>\n          </div>\n          <textarea id="toast-from-text" style="width:100%; height:45px; border:1px solid #cbd5e1; border-radius:6px; padding:4px; font-size:inherit; font-family:inherit; background:rgba(255,255,255,0.8);"></textarea>\n        </div>\n        <div style="display:flex; flex-direction:column; flex-grow:1;">\n          <div style="display:flex; justify-content:space-between; font-size:11px; color:#15803d; margin-bottom:2px;">\n            <strong>Translation:</strong>\n            <span id="btn-copy-to" style="cursor:pointer; color:${f}; font-weight:bold;">📋 Copy</span>\n          </div>\n          <textarea id="toast-to-text" style="width:100%; height:55px; border:1px solid #86efac; border-radius:6px; padding:4px; font-size:inherit; font-family:inherit; font-weight:600; color:#14532d; background:rgba(240,253,244,0.9);"></textarea>\n        </div>\n      </div>\n    `,document.body.appendChild(i),function(e,t){let n,o,a,r,i=!1;function s(t){if(!i)return;let s=Math.max(0,Math.min(a+(t.clientX-n),window.innerWidth-e.offsetWidth)),l=Math.max(0,Math.min(r+(t.clientY-o),window.innerHeight-e.offsetHeight));e.style.left=`${s}px`,e.style.top=`${l}px`}function l(){i=!1,document.removeEventListener("mousemove",s),document.removeEventListener("mouseup",l)}t.addEventListener("mousedown",t=>{if("SELECT"===t.target.tagName||"close-trans-toast"===t.target.id)return;i=!0,n=t.clientX,o=t.clientY;const d=e.getBoundingClientRect();a=d.left,r=d.top,document.addEventListener("mousemove",s),document.addEventListener("mouseup",l)})}(i,i.querySelector("#toast-drag-header")),i.querySelector("#close-trans-toast").onclick=()=>i.remove(),i.querySelector("#btn-copy-from").onclick=()=>navigator.clipboard.writeText(i.querySelector("#toast-from-text").value),i.querySelector("#btn-copy-to").onclick=()=>navigator.clipboard.writeText(i.querySelector("#toast-to-text").value),i.querySelector("#toast-lang-select").addEventListener("change",async e=>{const t=e.target.value;s()&&chrome.storage.local.set({targetLang:t});const n=i.querySelector("#toast-from-text").value;n.trim()&&(i.querySelector("#toast-to-text").value="Translating...",i.querySelector("#toast-to-text").value=await u(n,t))})}(e.x,e.y,e.width,e.height,t||{}),chrome.runtime.sendMessage({action:"capture_tab"},n=>{if(chrome.runtime.lastError||!n?.dataUrl){let e=document.getElementById("toast-status");return void(e&&(e.innerText="❌ Screen capture error!"))}let o=new Image;o.onload=async()=>{let n=document.createElement("canvas"),a=n.getContext("2d"),r=e.x*e.dpr,i=e.y*e.dpr,l=e.width*e.dpr,d=e.height*e.dpr;n.width=l,n.height=d,a.imageSmoothingQuality="high",a.drawImage(o,r,i,l,d,0,0,l,d);let c=n.toDataURL("image/jpeg",.9);const p=await async function(e,t){const n=t?[t,"K87889148388957","K83907727188957","helloworld"]:["K87889148388957","K83907727188957","helloworld"];for(let t of n)try{const n=new FormData;n.append("base64Image",e),n.append("language","eng"),n.append("apikey",t),n.append("scale","true"),n.append("OCREngine","2");const o=await fetch("https://api.ocr.space/parse/image",{method:"POST",body:n});if(429===o.status)continue;const a=await o.json(),r=a?.ParsedResults?.[0]?.ParsedText;if(r?.trim())return r.trim()}catch(e){console.error("OCR Key Failed:",t)}return""}(c,t?.ocrApiKey),g=document.getElementById("toast-status"),f=document.getElementById("toast-result");if(!p)return void(g&&(g.innerText="❌ No text found in selected area!"));const y=await u(p,t?.targetLang||"vi");g&&(g.style.display="none"),f&&(f.style.display="flex");let m=document.getElementById("toast-from-text"),x=document.getElementById("toast-to-text");m&&(m.value=p),x&&(x.value=y),!1!==t?.saveData&&s()&&chrome.storage.local.set({lastSourceText:p,lastTransText:y})},o.src=n.dataUrl}))})}catch(e){notify.notifyAction("Please refresh (F5) the webpage to continue using the extension!","warning",3e3)}}(o)}function p(e){if("image"===e.bgType&&e.bgImageUrl)return`url("${e.bgImageUrl}") center/cover no-repeat`;if("gradient"===e.bgType)return`linear-gradient(${e.gradAngle||135}deg, ${e.gradStart||"#e0c3fc"}, ${e.gradEnd||"#8ec5fc"})`;let t=e.bgColor||"#ffffff",n=e.bgAlpha??.95;return`rgba(${parseInt(t.slice(1,3),16)||255}, ${parseInt(t.slice(3,5),16)||255}, ${parseInt(t.slice(5,7),16)||255}, ${n})`}document.addEventListener("keydown",e=>{!e.shiftKey||"T"!==e.key&&"t"!==e.key&&"R"!==e.key&&"r"!==e.key||(e.preventDefault(),function(){if(!s())return void notify.notifyAction("Extension context was reloaded.\nPlease refresh (F5) the webpage to continue!","warning",3e3);if(document.getElementById("snip-overlay"))return;a=document.createElement("div"),a.id="snip-overlay",a.style.cssText="\n      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;\n      background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(2px);\n      z-index: 2147483647; cursor: crosshair; user-select: none;\n    ",r=document.createElement("div"),r.style.cssText="\n      position: absolute; border: 2px dashed #4f46e5;\n      background: rgba(79, 70, 229, 0.15); border-radius: 4px; display: none;\n    ",a.appendChild(r),document.body.appendChild(a),a.addEventListener("mousedown",l),a.addEventListener("mousemove",d),a.addEventListener("mouseup",c)}())});try{chrome?.storage?.onChanged&&chrome.storage.onChanged.addListener((e,t)=>{s()&&"local"===t&&function(){if(!s())return;let e=document.getElementById("trans-floating-toast");if(!e)return;chrome.storage.local.get(["targetLang","showFrom","toastStyle"],async t=>{const n=t.toastStyle||{};if(e.style.background=p(n),n.textColor&&(e.style.color=n.textColor),n.borderColor){e.style.borderColor=n.borderColor;let t=e.querySelector("#toast-drag-header strong");t&&(t.style.color=n.borderColor)}void 0!==n.radius&&(e.style.borderRadius=n.radius+"px"),n.fontSize&&(e.style.fontSize=n.fontSize+"px",e.querySelectorAll("textarea").forEach(e=>e.style.fontSize=n.fontSize+"px")),n.fontFamily&&(e.style.fontFamily=n.fontFamily,e.querySelectorAll("textarea").forEach(e=>e.style.fontFamily=n.fontFamily));let o=e.querySelector("#toast-from-container");o&&(o.style.display=!1===t.showFrom?"none":"flex");let a=e.querySelector("#toast-lang-select");if(a&&t.targetLang&&a.value!==t.targetLang){a.value=t.targetLang;let n=e.querySelector("#toast-from-text"),o=e.querySelector("#toast-to-text");n?.value&&o&&(o.value="Translating...",o.value=await u(n.value,t.targetLang))}})}()})}catch(e){}async function u(e,t="vi"){if(!e?.trim())return"";try{const n=await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${t}&dt=t&q=${encodeURIComponent(e)}`);return(await n.json())[0].map(e=>e[0]).join("")}catch{return"Translation connection error!"}}notify.notifyAction("Content loaded!","success",3e3)}();
+(function () {
+  let isSelecting = false, startX, startY, endX, endY, overlay, selectionBox;
+
+  function isContextValid() {
+    try {
+      return !!(chrome && chrome.runtime && chrome.runtime.id);
+    } catch (e) {
+      return false;
+    }
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.shiftKey && (e.key === 'T' || e.key === 't' || e.key === 'R' || e.key === 'r')) {
+      e.preventDefault();
+      startSnipping();
+    }
+  });
+
+  function startSnipping() {
+    if (!isContextValid()) {
+      notify.notifyAction("Extension context was reloaded.\nPlease refresh (F5) the webpage to continue!", 'warning', 3e3);
+      return;
+    }
+    if (document.getElementById('snip-overlay')) return;
+
+    overlay = document.createElement('div');
+    overlay.id = 'snip-overlay';
+    overlay.style.cssText = `
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(2px);
+      z-index: 2147483647; cursor: crosshair; user-select: none;
+    `;
+
+    selectionBox = document.createElement('div');
+    selectionBox.style.cssText = `
+      position: absolute; border: 2px dashed #4f46e5;
+      background: rgba(79, 70, 229, 0.15); border-radius: 4px; display: none;
+    `;
+    overlay.appendChild(selectionBox);
+    document.body.appendChild(overlay);
+
+    overlay.addEventListener('mousedown', onMouseDown);
+    overlay.addEventListener('mousemove', onMouseMove);
+    overlay.addEventListener('mouseup', onMouseUp);
+  }
+
+  function onMouseDown(e) {
+    isSelecting = true;
+    startX = e.clientX; startY = e.clientY;
+    Object.assign(selectionBox.style, {
+      left: `${startX}px`, top: `${startY}px`, width: '0px', height: '0px', display: 'block'
+    });
+  }
+
+  function onMouseMove(e) {
+    if (!isSelecting) return;
+    endX = e.clientX; endY = e.clientY;
+    let width = Math.abs(endX - startX), height = Math.abs(endY - startY);
+    let left = Math.min(startX, endX), top = Math.min(startY, endY);
+    Object.assign(selectionBox.style, { left: `${left}px`, top: `${top}px`, width: `${width}px`, height: `${height}px` });
+  }
+
+  async function onMouseUp(e) {
+    if (!isSelecting) return;
+    isSelecting = false;
+    let rect = {
+      x: Math.min(startX, e.clientX), y: Math.min(startY, e.clientY),
+      width: Math.abs(e.clientX - startX), height: Math.abs(e.clientY - startY),
+      dpr: window.devicePixelRatio || 1
+    };
+    overlay?.remove();
+    if (rect.width > 10 && rect.height > 10) captureAndCrop(rect);
+  }
+
+  function generateBackgroundStyle(ts) {
+    if (ts.bgType === 'image' && ts.bgImageUrl) return `url("${ts.bgImageUrl}") center/cover no-repeat`;
+    if (ts.bgType === 'gradient') return `linear-gradient(${ts.gradAngle || 135}deg, ${ts.gradStart || '#e0c3fc'}, ${ts.gradEnd || '#8ec5fc'})`;
+    let hex = ts.bgColor || '#ffffff', alpha = ts.bgAlpha ?? 0.95;
+    let r = parseInt(hex.slice(1, 3), 16) || 255, g = parseInt(hex.slice(3, 5), 16) || 255, b = parseInt(hex.slice(5, 7), 16) || 255;
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
+
+  try {
+    if (chrome?.storage?.onChanged) {
+      chrome.storage.onChanged.addListener((changes, area) => {
+        if (isContextValid() && area === 'local') updateActiveToastStyle();
+      });
+    }
+  } catch (e) { }
+
+  function updateActiveToastStyle() {
+    if (!isContextValid()) return;
+    let toast = document.getElementById('trans-floating-toast');
+    if (!toast) return;
+
+    chrome.storage.local.get(['targetLang', 'showFrom', 'toastStyle'], async (config) => {
+      const ts = config.toastStyle || {};
+      toast.style.background = generateBackgroundStyle(ts);
+      if (ts.textColor) toast.style.color = ts.textColor;
+      if (ts.borderColor) {
+        toast.style.borderColor = ts.borderColor;
+        let title = toast.querySelector('#toast-drag-header strong');
+        if (title) title.style.color = ts.borderColor;
+      }
+      if (ts.radius !== undefined) toast.style.borderRadius = ts.radius + 'px';
+      if (ts.fontSize) {
+        toast.style.fontSize = ts.fontSize + 'px';
+        toast.querySelectorAll('textarea').forEach(ta => ta.style.fontSize = ts.fontSize + 'px');
+      }
+      if (ts.fontFamily) {
+        toast.style.fontFamily = ts.fontFamily;
+        toast.querySelectorAll('textarea').forEach(ta => ta.style.fontFamily = ts.fontFamily);
+      }
+
+      let fromBox = toast.querySelector('#toast-from-container');
+      if (fromBox) fromBox.style.display = (config.showFrom === false) ? 'none' : 'flex';
+
+      let langSelect = toast.querySelector('#toast-lang-select');
+      if (langSelect && config.targetLang && langSelect.value !== config.targetLang) {
+        langSelect.value = config.targetLang;
+        let fromTa = toast.querySelector('#toast-from-text'), toTa = toast.querySelector('#toast-to-text');
+        if (fromTa?.value && toTa) {
+          toTa.value = "Translating...";
+          toTa.value = await translateInPage(fromTa.value, config.targetLang);
+        }
+      }
+    });
+  }
+
+  function showFloatingToast(x, y, width, height, config) {
+    let oldToast = document.getElementById('trans-floating-toast');
+    if (oldToast) oldToast.remove();
+
+    let toast = document.createElement('div');
+    toast.id = 'trans-floating-toast';
+
+    let posX = Math.max(10, Math.min(x, window.innerWidth - 350));
+    let posY = (y + height + 250 > window.innerHeight) ? Math.max(10, y - 240) : y + height + 10;
+
+    const ts = config.toastStyle || {};
+    const bgStyle = generateBackgroundStyle(ts);
+    const border = ts.borderColor || '#4f46e5';
+
+    toast.style.cssText = `
+      position: fixed; left: ${posX}px; top: ${posY}px; width: 340px; min-width: 260px;
+      background: ${bgStyle}; color: ${ts.textColor || '#0f172a'};
+      border: 1.5px solid ${border}; border-radius: ${ts.radius ?? 10}px;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.2); padding: 12px;
+      z-index: 2147483647; font-family: ${ts.fontFamily || 'sans-serif'}; font-size: ${ts.fontSize || 13}px;
+      display: flex; flex-direction: column; gap: 8px; resize: both; overflow: auto;
+    `;
+
+    toast.innerHTML = `
+      <div id="toast-drag-header" style="display:flex; justify-content:space-between; align-items:center; cursor:move; user-select:none; border-bottom:1px solid rgba(0,0,0,0.08); padding-bottom:6px;">
+        <strong style="color:${border}; font-size:12px; display:flex; align-items:center; gap:4px;">🌐 Translator Pro</strong>
+        <div style="display:flex; align-items:center; gap:8px; margin-left:auto;">
+          <select id="toast-lang-select" style="font-size:11px; padding:2px 6px; border-radius:6px; border:1px solid #ccc; background:#fff;">
+            <option value="vi" ${config.targetLang === 'vi' ? 'selected' : ''}>Vietnamese</option>
+            <option value="en" ${config.targetLang === 'en' ? 'selected' : ''}>English</option>
+            <option value="zh-CN" ${config.targetLang === 'zh-CN' ? 'selected' : ''}>Chinese</option>
+            <option value="ja" ${config.targetLang === 'ja' ? 'selected' : ''}>Japanese</option>
+            <option value="ko" ${config.targetLang === 'ko' ? 'selected' : ''}>Korean</option>
+          </select>
+          <span id="close-trans-toast" style="cursor:pointer; font-size:16px; font-weight:bold; color:#94a3b8;">&times;</span>
+        </div>
+      </div>
+      <div id="toast-status" style="color:#64748b; font-size:12px;">Scanning text & translating...</div>
+      <div id="toast-result" style="display:none; flex-direction:column; gap:8px; flex-grow:1;">
+        <div id="toast-from-container" style="display:${config.showFrom === false ? 'none' : 'flex'}; flex-direction:column;">
+          <div style="display:flex; justify-content:space-between; font-size:11px; color:#64748b; margin-bottom:2px;">
+            <span>Source text:</span>
+            <span id="btn-copy-from" style="cursor:pointer; color:${border}; font-weight:bold;">📋 Copy</span>
+          </div>
+          <textarea id="toast-from-text" style="width:100%; height:45px; border:1px solid #cbd5e1; border-radius:6px; padding:4px; font-size:inherit; font-family:inherit; background:rgba(255,255,255,0.8);"></textarea>
+        </div>
+        <div style="display:flex; flex-direction:column; flex-grow:1;">
+          <div style="display:flex; justify-content:space-between; font-size:11px; color:#15803d; margin-bottom:2px;">
+            <strong>Translation:</strong>
+            <span id="btn-copy-to" style="cursor:pointer; color:${border}; font-weight:bold;">📋 Copy</span>
+          </div>
+          <textarea id="toast-to-text" style="width:100%; height:55px; border:1px solid #86efac; border-radius:6px; padding:4px; font-size:inherit; font-family:inherit; font-weight:600; color:#14532d; background:rgba(240,253,244,0.9);"></textarea>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(toast);
+    makeToastDraggable(toast, toast.querySelector('#toast-drag-header'));
+
+    toast.querySelector('#close-trans-toast').onclick = () => toast.remove();
+    toast.querySelector('#btn-copy-from').onclick = () => navigator.clipboard.writeText(toast.querySelector('#toast-from-text').value);
+    toast.querySelector('#btn-copy-to').onclick = () => navigator.clipboard.writeText(toast.querySelector('#toast-to-text').value);
+
+    toast.querySelector('#toast-lang-select').addEventListener('change', async (e) => {
+      const newLang = e.target.value;
+      if (isContextValid()) chrome.storage.local.set({ targetLang: newLang });
+      const fromVal = toast.querySelector('#toast-from-text').value;
+      if (fromVal.trim()) {
+        toast.querySelector('#toast-to-text').value = "Translating...";
+        toast.querySelector('#toast-to-text').value = await translateInPage(fromVal, newLang);
+      }
+    });
+
+    return toast;
+  }
+
+  function makeToastDraggable(toastEl, handleEl) {
+    let isDragging = false, dragStartX, dragStartY, initialLeft, initialTop;
+    handleEl.addEventListener('mousedown', (e) => {
+      if (e.target.tagName === 'SELECT' || e.target.id === 'close-trans-toast') return;
+      isDragging = true; dragStartX = e.clientX; dragStartY = e.clientY;
+      const rect = toastEl.getBoundingClientRect();
+      initialLeft = rect.left; initialTop = rect.top;
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mouseup', onMouseUp);
+    });
+
+    function onMouseMove(e) {
+      if (!isDragging) return;
+      let newLeft = Math.max(0, Math.min(initialLeft + (e.clientX - dragStartX), window.innerWidth - toastEl.offsetWidth));
+      let newTop = Math.max(0, Math.min(initialTop + (e.clientY - dragStartY), window.innerHeight - toastEl.offsetHeight));
+      toastEl.style.left = `${newLeft}px`; toastEl.style.top = `${newTop}px`;
+    }
+
+    function onMouseUp() {
+      isDragging = false;
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    }
+  }
+
+  async function translateInPage(text, targetLang = 'vi') {
+    if (!text?.trim()) return '';
+    try {
+      const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`);
+      const data = await res.json();
+      return data[0].map(item => item[0]).join('');
+    } catch { return "Translation connection error!"; }
+  }
+
+  async function doOCRInPage(base64Image, customApiKey) {
+    const keys = customApiKey ? [customApiKey, "K87889148388957", "K83907727188957", "helloworld"] : ["K87889148388957", "K83907727188957", "helloworld"];
+    for (let key of keys) {
+      try {
+        const formData = new FormData();
+        formData.append("base64Image", base64Image);
+        formData.append("language", "eng");
+        formData.append("apikey", key);
+        formData.append("scale", "true");
+        formData.append("OCREngine", "2");
+
+        const res = await fetch("https://api.ocr.space/parse/image", { method: "POST", body: formData });
+        if (res.status === 429) continue;
+        const data = await res.json();
+        const text = data?.ParsedResults?.[0]?.ParsedText;
+        if (text?.trim()) return text.trim();
+      } catch (err) { console.error("OCR Key Failed:", key); }
+    }
+    return "";
+  }
+
+  function captureAndCrop(rect) {
+    if (!isContextValid()) {
+      notify.notifyAction("Extension context was reloaded.\nPlease refresh (F5) the webpage to continue!", 'warning', 3e3);
+      return;
+    }
+
+    try {
+      chrome.storage.local.get(['targetLang', 'saveData', 'showFrom', 'toastStyle', 'ocrApiKey'], (config) => {
+        if (!isContextValid()) return;
+
+        showFloatingToast(rect.x, rect.y, rect.width, rect.height, config || {});
+
+        chrome.runtime.sendMessage({ action: "capture_tab" }, (response) => {
+          if (chrome.runtime.lastError || !response?.dataUrl) {
+            let statusEl = document.getElementById('toast-status');
+            if (statusEl) statusEl.innerText = "❌ Screen capture error!";
+            return;
+          }
+
+          let img = new Image();
+          img.onload = async () => {
+            let canvas = document.createElement('canvas');
+            let ctx = canvas.getContext('2d');
+            let cropX = rect.x * rect.dpr, cropY = rect.y * rect.dpr;
+            let cropW = rect.width * rect.dpr, cropH = rect.height * rect.dpr;
+
+            canvas.width = cropW; canvas.height = cropH;
+            ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(img, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
+
+            let base64Image = canvas.toDataURL('image/jpeg', 0.9);
+
+            const sourceText = await doOCRInPage(base64Image, config?.ocrApiKey);
+            const statusEl = document.getElementById('toast-status');
+            const resultEl = document.getElementById('toast-result');
+
+            if (!sourceText) {
+              if (statusEl) statusEl.innerText = "❌ No text found in selected area!";
+              return;
+            }
+
+            const translated = await translateInPage(sourceText, config?.targetLang || 'vi');
+            if (statusEl) statusEl.style.display = 'none';
+            if (resultEl) resultEl.style.display = 'flex';
+
+            let fromTa = document.getElementById('toast-from-text');
+            let toTa = document.getElementById('toast-to-text');
+            if (fromTa) fromTa.value = sourceText;
+            if (toTa) toTa.value = translated;
+
+            if (config?.saveData !== false && isContextValid()) {
+              chrome.storage.local.set({ lastSourceText: sourceText, lastTransText: translated });
+            }
+          };
+          img.src = response.dataUrl;
+        });
+      });
+    } catch (err) {
+      notify.notifyAction("Please refresh (F5) the webpage to continue using the extension!", 'warning', 3e3);
+    }
+  }
+  notify.notifyAction("Content loaded!", 'success', 3e3);
+})();
