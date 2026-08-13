@@ -1,1 +1,15 @@
-chrome.sidePanel.setPanelBehavior({openPanelOnActionClick:!0}).catch(console.error),chrome.runtime.onMessage.addListener((r,e,a)=>{if("capture_tab"===r.action){const r=e?.tab?.windowId;return chrome.tabs.captureVisibleTab(r,{format:"png"},r=>{chrome.runtime.lastError?a({dataUrl:null,error:chrome.runtime.lastError.message}):a({dataUrl:r})}),!0}});
+chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch(console.error);
+
+chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
+  if (req.action === "capture_tab") {
+    const windowId = sender?.tab?.windowId;
+    chrome.tabs.captureVisibleTab(windowId, { format: "png" }, (dataUrl) => {
+      if (chrome.runtime.lastError) {
+        sendResponse({ dataUrl: null, error: chrome.runtime.lastError.message });
+      } else {
+        sendResponse({ dataUrl });
+      }
+    });
+    return true;
+  }
+});
