@@ -13,3 +13,9 @@ Extract the downloaded .zip file into a folder on your computer.
     - [edge://extensions/](edge://extensions/)
 2. Enable Developer mode using the toggle switch in the top-right corner.
 3. Click Load unpacked and select the extracted folder.
+
+---
+## USING
+ - *[OCR space](https://api.ocr.space/parse/image)*
+ - *[bootstrap@5.3.2](https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css)*
+ - *[https://translate.googleapis.com](https://translate.googleapis.com)*
