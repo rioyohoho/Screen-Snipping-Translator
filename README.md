@@ -1,59 +1,71 @@
-# Hướng Dẫn Sử Dụng Extension Screen & Text Translator
+# Screen & Text Translator - User Guide / Hướng Dẫn Sử Dụng
 
 ---
 
-### 1. Phím Tắt Tiện Ích
+### 1. Keyboard Shortcuts / Phím Tắt
 
-| Phím Tắt | Chức Năng |
+| Shortcut / Phím Tắt | Action / Chức Năng |
 | :--- | :--- |
-| **`Alt + T`** hoặc **`Alt + R`** | Kích hoạt công cụ **Quét Vùng Ảnh (Snipping OCR)** trên màn hình để nhận diện chữ và dịch |
-| **`Alt + C`** | Kích hoạt chế độ **Trỏ & Chọn Phần Tử (Find Text)** để lấy chữ trực tiếp từ website |
-| **`Escape` (Esc)** | Hủy bỏ chế độ quét / trỏ chọn phần tử |
+| **`Alt + T`** / **`Alt + R`** | **[EN]** Activate **Screen Snipping (OCR/AI)** to capture and translate an area.<br>**[VI]** Kích hoạt công cụ **Quét Vùng Ảnh (OCR/AI)** để chụp và dịch vùng chọn. |
+| **`Alt + C`** | **[EN]** Activate **Inspect & Pick Element (Find Text)** to extract text directly from the webpage.<br>**[VI]** Kích hoạt chế độ **Trỏ & Chọn Phần Tử (Find Text)** để lấy chữ trực tiếp từ trang web. |
+| **`Escape` (Esc)** | **[EN]** Cancel snipping or element picking mode.<br>**[VI]** Hủy bỏ chế độ quét ảnh hoặc trỏ chọn phần tử. |
 
 ---
 
-### 2. Các Chức Năng Chính
+### 2. Core Features / Các Chức Năng Chính
 
-#### 2.1. Quét Vùng Ảnh (Snipping OCR / AI)
-1. Nhấn **`Alt + T`** hoặc **`Alt + R`** trên bất kỳ trang web nào.
-2. Giữ chuột trái và kéo chọn vùng văn bản / hình ảnh cần dịch.
-3. Thả chuột: Toast dịch sẽ tự động mở tại vị trí vừa quét, nhận diện và trả về kết quả dịch.
+#### 2.1. Screen Snipping (OCR / AI) / Quét Vùng Màn Hình
+* **[EN]** Press **`Alt + T`** or **`Alt + R`**, hold the left mouse button, and drag a selection box over the text/image.
+* **[VI]** Nhấn **`Alt + T`** hoặc **`Alt + R`**, giữ chuột trái và kéo vùng chọn qua đoạn văn bản/hình ảnh cần dịch.
+* **[EN]** Release the mouse to automatically extract text and display the translated result in the floating toast.
+* **[VI]** Thả chuột để tự động trích xuất nội dung và hiển thị kết quả dịch trên cửa sổ toast nổi.
 
-#### 2.2. Tìm & Trỏ Lấy Văn Bản (Find Text)
-1. Nhấn **`Alt + C`** hoặc click nút **`🔍 Find Text`** trong Side Panel.
-2. Di chuột đến đoạn văn bản hoặc khối HTML cần dịch (khung viền xanh sẽ sáng lên theo phần tử).
-3. Click chuột trái vào phần tử để trích xuất nội dung và dịch ngay lập tức.
+#### 2.2. Find Text (Element Inspector) / Trỏ & Lấy Văn Bản
+* **[EN]** Press **`Alt + C`** or click the **`🔍 Find Text`** button in the extension panel.
+* **[VI]** Nhấn **`Alt + C`** hoặc nhấn nút **`🔍 Find Text`** trên bảng điều khiển tiện ích.
+* **[EN]** Hover over any web element to highlight it with a blue frame, then left-click to extract and translate immediately.
+* **[VI]** Di chuột qua phần tử trên trang để làm nổi bật khung viền xanh, sau đó click chuột trái để trích xuất và dịch ngay.
 
-#### 2.3. Cửa Sổ Toast Nổi (Floating Toast)
-* **Kéo thả di chuyển:** Giữ chuột vào thanh tiêu đề trên cùng để kéo Toast đi bất kỳ đâu.
-* **Đổi ngôn ngữ nhanh:** Chọn ngôn ngữ nguồn / đích hoặc bấm nút **`⇄`** để đảo chiều dịch trực tiếp.
-* **Đổi Engine tức thì:** Chuyển đổi giữa `⚡ OCR`, `✨ Gemini`, `🤖 GPT`.
-* **Sao chép:** Bấm **`📋 Copy`** ở ô văn bản gốc hoặc kết quả dịch.
-* **Co giãn kích thước 2 chiều:** Kéo góc dưới-phải của Toast để phóng to/thu nhỏ. Kích thước (Width & Height) sẽ tự động lưu lại vào cài đặt.
+#### 2.3. Floating Toast Window / Cửa Sổ Toast Nổi
+* **[EN]** **Draggable:** Click and hold the header bar to move the toast anywhere on the screen.
+* **[VI]** **Kéo thả:** Nhấn giữ thanh tiêu đề trên cùng để di chuyển toast đến vị trí bất kỳ.
+* **[EN]** **Language Switcher:** Change languages or click **`⇄`** to swap source and target languages instantly.
+* **[VI]** **Đổi ngôn ngữ:** Chọn lại ngôn ngữ hoặc bấm nút **`⇄`** để đảo chiều ngôn ngữ trực tiếp.
+* **[EN]** **Engine Switcher:** Switch on-the-fly between `⚡ OCR`, `✨ Gemini`, and `🤖 GPT`.
+* **[VI]** **Đổi Engine:** Chuyển đổi trực tiếp giữa `⚡ OCR`, `✨ Gemini`, và `🤖 GPT`.
+* **[EN]** **Copy Text:** Click **`📋 Copy`** on either the source text or translation field.
+* **[VI]** **Sao chép:** Bấm **`📋 Copy`** tại ô văn bản gốc hoặc ô kết quả dịch.
+* **[EN]** **Bidirectional Resize Sync:** Drag the bottom-right corner to resize; the width and height automatically sync and save to settings.
+* **[VI]** **Đồng bộ kích thước 2 chiều:** Kéo góc dưới-phải để thay đổi kích cỡ; thông số rộng/cao sẽ tự động lưu vào cài đặt.
 
 ---
 
-### 3. Hướng Dẫn Quản Lý Cài Đặt (Panel Extension)
+### 3. Extension Panel Settings / Quản Lý Cài Đặt
 
-#### Tab 1: Translate (Giao diện dịch chính)
-* Chọn Engine dịch mặc định (`OCR Space`, `Gemini 1.5 Flash`, `GPT-4o Mini`).
-* Chọn ngôn ngữ Nguồn (From) và Đích (To).
-* Dịch văn bản thủ công bằng nút **`Translate`**.
-* Nút **`Clear`** để xóa trắng dữ liệu hiện tại.
+#### Tab 1: Translate / Dịch Thuật
+* **[EN]** Select the default translation engine (`OCR Space`, `Gemini 1.5 Flash`, `GPT-4o Mini`).
+* **[VI]** Chọn Engine dịch mặc định (`OCR Space`, `Gemini 1.5 Flash`, `GPT-4o Mini`).
+* **[EN]** Set Source (From) and Target (To) languages, translate manually, or clear current inputs.
+* **[VI]** Chọn ngôn ngữ Nguồn (From) và Đích (To), dịch thủ công hoặc xóa trắng nội dung.
 
-#### Tab 2: Keys (Quản lý API Key)
-* **Gemini API Keys & OpenAI API Keys:** Thêm danh sách key dự phòng (nhập nhiều key cách nhau bằng dấu phẩy hoặc xuống dòng).
-* **Cơ chế Cooldown:** Khi 1 key bị lỗi/hết quota (429/403/401), hệ thống tự chuyển sang key tiếp theo và khóa key lỗi theo thời gian cấu hình (`Reset cooldown`).
-* Bấm vào nhãn số giây màu đỏ để reset trạng thái key về `0` (sẵn sàng sử dụng).
+#### Tab 2: Keys / Quản Lý API Key
+* **[EN]** Add multiple backup API keys separated by commas or new lines.
+* **[VI]** Thêm danh sách nhiều key dự phòng, phân tách bằng dấu phẩy hoặc dòng mới.
+* **[EN]** Automatic error/rate-limit rotation with a configurable cooldown timer (`Reset cooldown`).
+* **[VI]** Tự động chuyển key khi gặp lỗi/hết quota theo bộ đếm thời gian (`Reset cooldown`).
+* **[EN]** Click the red cooldown badge on any key to manually reset its timer back to `0`.
+* **[VI]** Nhấp vào nhãn đếm ngược màu đỏ để reset trạng thái key về `0` ngay lập tức.
 
-#### Tab 3: Styles (Tùy Chỉnh Giao Diện Toast)
-* **Toast Dimensions:** Cài đặt chiều rộng (`Width`) và chiều cao (`Height`) mặc định.
-* **Background Style:**
-  * `Solid Color + Alpha`: Màu đơn sắc kèm thanh trượt độ trong suốt (Alpha).
-  * `Gradient Color`: Chuyển màu 2 điểm kèm góc xoay 360° theo chiều kim đồng hồ.
-  * `Background Image`: Đặt hình nền Toast theo đường dẫn URL.
-* **Text & Font:** Đổi màu chữ kèm Alpha, kích cỡ chữ (`Font Size`), và chọn Font (`Arial`, `Segoe UI`, `Roboto`, `Georgia`, `Monospace`, hoặc Font tùy chỉnh).
-* **Border & Radius:** Đổi màu viền kèm Alpha, độ dày viền (`Border Size`), và độ bo góc (`Corner Radius`, mặc định `1px`).
+#### Tab 3: Styles / Tùy Chỉnh Giao Diện
+* **[EN]** **Dimensions:** Set default toast `Width` (px) and `Height` (px).
+* **[VI]** **Kích thước:** Thiết lập chiều rộng (`Width`) và chiều cao (`Height`) mặc định của toast.
+* **[EN]** **Background:** Choose Solid Color + Alpha, Gradient (with 0-360° clockwise rotation), or Image URL.
+* **[VI]** **Nền:** Chọn màu đơn sắc + Alpha, Gradient (kèm xoay góc 0-360° theo kim đồng hồ), hoặc Ảnh URL.
+* **[EN]** **Text & Font:** Customize text color with transparency (Alpha), font size, and font families.
+* **[VI]** **Văn bản & Font:** Tùy chỉnh màu chữ kèm độ trong suốt (Alpha), cỡ chữ, và font chữ.
+* **[EN]** **Border & Radius:** Customize border color with Alpha, border size (px), and corner radius (default: `1px`).
+* **[VI]** **Viền & Bo Góc:** Chỉnh màu viền kèm Alpha, độ dày viền (px), và bán kính bo góc (mặc định: `1px`).
 
-#### Tab 4: Info (Thông Tin Phiên Bản)
-* Xem phiên bản hiện tại và hướng dẫn phím tắt nhanh.
+#### Tab 4: Info / Thông Tin
+* **[EN]** View the extension version, features summary, and quick shortcut references.
+* **[VI]** Xem phiên bản tiện ích, tóm tắt tính năng, và tra cứu phím tắt nhanh.
