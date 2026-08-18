@@ -9,16 +9,41 @@ git clone https://github.com/rioyohoho/Screen-Snipping-Translator.git
 cd Screen-Snipping-Translator
 npm install
 ```
-
----
-
 ### 1. Keyboard Shortcuts / Phím Tắt
 
-| Shortcut / Phím Tắt | Action / Chức Năng |
-| :--- | :--- |
-| **`Alt + T`** / **`Alt + R`** | **[EN]** Activate **Screen Snipping (OCR/AI)** to capture and translate an area.<br>**[VI]** Kích hoạt công cụ **Quét Vùng Ảnh (OCR/AI)** để chụp và dịch vùng chọn. |
-| **`Alt + C`** | **[EN]** Activate **Inspect & Pick Element (Find Text)** to extract text directly from the webpage.<br>**[VI]** Kích hoạt chế độ **Trỏ & Chọn Phần Tử (Find Text)** để lấy chữ trực tiếp từ trang web. |
-| **`Escape` (Esc)** | **[EN]** Cancel snipping or element picking mode.<br>**[VI]** Hủy bỏ chế độ quét ảnh hoặc trỏ chọn phần tử. |
+<table>
+  <tr>
+    <td valign="top">
+      <table>
+        <thead>
+          <tr>
+            <th>Shortcut / Phím Tắt</th>
+            <th>Action / Chức Năng</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>Alt + T</code> / <code>Alt + R</code></td>
+            <td><strong>[EN]</strong> Activate <strong>Screen Snipping (OCR/AI)</strong> to capture and translate an area.<br><strong>[VI]</strong> Kích hoạt <strong>Quét Vùng Ảnh (OCR/AI)</strong> để chụp và dịch.</td>
+          </tr>
+          <tr>
+            <td><code>Alt + C</code></td>
+            <td><strong>[EN]</strong> Activate <strong>Inspect & Pick Element</strong> to extract text.<br><strong>[VI]</strong> Kích hoạt <strong>Trỏ & Chọn Phần Tử</strong> để lấy chữ.</td>
+          </tr>
+          <tr>
+            <td><code>Escape</code> (Esc)</td>
+            <td><strong>[EN]</strong> Cancel snipping or element picking mode.<br><strong>[VI]</strong> Hủy bỏ chế độ quét/chọn.</td>
+          </tr>
+        </tbody>
+      </table>
+    </td>
+    <td valign="top">
+      <a href="https://youtube.com/shorts/yqPH-6_6Gdg?feature=share">
+        <img width="300" alt="Video demo" src="https://github.com/user-attachments/assets/d33b2f83-a9f4-4b96-97d7-2239fa0f41c2" />
+      </a>
+    </td>
+  </tr>
+</table>
 
 ---
 
