@@ -1,5 +1,15 @@
 # Screen & Text Translator - User Guide / Hướng Dẫn Sử Dụng
 
+## REQUIREMENTS
+```
+node -v & npm -v
+```
+```
+git clone https://github.com/rioyohoho/Screen-Snipping-Translator.git
+cd Screen-Snipping-Translator
+npm install
+```
+
 ---
 
 ### 1. Keyboard Shortcuts / Phím Tắt
