@@ -1,232 +1,259 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Side Panel Translator</title>
-  <link href="styles/bootstrap.min.css" rel="stylesheet">
-  <style>
-    :root {
-      --primary: #4f46e5;
-      --primary-hover: #4338ca;
-      --bg-main: #f8fafc;
-      --card-bg: #ffffff;
-      --text-main: #0f172a;
-      --text-muted: #64748b;
-      --border-color: #e2e8f0;
-    }
-    body {
-      margin: 0; padding: 12px; background-color: var(--bg-main);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      color: var(--text-main); font-size: 13px;
-    }
-    .nav-pills .nav-link {
-      color: var(--text-muted); font-weight: 600; font-size: 12px; border-radius: 8px; padding: 6px 12px; transition: all 0.2s; cursor: pointer;
-    }
-    .nav-pills .nav-link.active {
-      background-color: var(--primary); color: #fff; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
-    }
-    .card-panel {
-      background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px;
-      padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 12px;
-    }
-    .form-control, .form-select {
-      font-size: 12px; border-radius: 8px; border-color: var(--border-color); padding: 6px 10px;
-    }
-    .form-control:focus, .form-select:focus {
-      border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
-    }
-    .btn-primary-custom {
-      background: var(--primary); border: none; font-weight: 600; color: white; border-radius: 8px; transition: all 0.2s;
-    }
-    .btn-primary-custom:hover { background: var(--primary-hover); transform: translateY(-1px); }
-    textarea { resize: vertical; font-family: inherit; }
-    .spinner-sm { width: 1rem; height: 1rem; border-width: 0.15em; }
-  </style>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Side Panel Translator</title>
+	<link href="styles/bootstrap.min.css" rel="stylesheet">
+	<style>
+		:root{--primary:#4f46e5;--primary-hover:#4338ca;--bg-main:#f8fafc;--card-bg:#ffffff;--text-main:#0f172a;--text-muted:#64748b;--border-color:#e2e8f0;}
+		body{margin:0;padding:12px;background-color:var(--bg-main);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--text-main);font-size:13px;}
+		.nav-pills .nav-link{color:var(--text-muted);font-weight:600;font-size:11px;border-radius:8px;padding:5px 8px;transition:all 0.2s;cursor:pointer;}
+		.nav-pills .nav-link.active{background-color:var(--primary);color:#fff;box-shadow:0 4px 12px rgba(79,70,229,0.25);}
+		.card-panel{background:var(--card-bg);border:1px solid var(--border-color);border-radius:12px;padding:12px;box-shadow:0 1px 3px rgba(0,0,0,0.05);margin-bottom:10px;}
+		.form-control,.form-select{font-size:12px;border-radius:8px;border-color:var(--border-color);padding:5px 8px;}
+		.form-control:focus,.form-select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(79,70,229,0.15);}
+		.btn-primary-custom{background:var(--primary);border:none;font-weight:600;color:white;border-radius:8px;transition:all 0.2s;}
+		.btn-primary-custom:hover{background:var(--primary-hover);transform:translateY(-1px);}
+		.btn-swap{width:30px;height:30px;padding:0;display:flex;align-items:center;justify-content:center;border-radius:50%;border:1px solid var(--border-color);background:#fff;cursor:pointer;transition:all 0.2s;}
+		.btn-swap:hover{background:#f1f5f9;color:var(--primary);transform:rotate(180deg);}
+		.key-masked{-webkit-text-security:disc;font-family:monospace;}
+		.key-row{display:flex;align-items:center;gap:4px;margin-bottom:6px;}
+		.badge-status{font-family:monospace;font-size:11px;min-width:45px;text-align:center;cursor:pointer;}
+		textarea{resize:vertical;font-family:inherit;}
+	</style>
 </head>
 <body>
-
-  <!-- Navigation Tabs -->
-  <ul class="nav nav-pills nav-fill mb-3 bg-white p-1 rounded-3 border">
-    <li class="nav-item"><button class="nav-link active" id="tab-view" data-target="pane-view">Translate</button></li>
-    <li class="nav-item"><button class="nav-link" id="tab-config" data-target="pane-config">Styles</button></li>
-    <li class="nav-item"><button class="nav-link" id="tab-info" data-target="pane-info">Info</button></li>
-  </ul>
-
-  <!-- Tab Contents -->
-  <div class="tab-content">
-    
-    <!-- TRANSLATE TAB -->
-    <div class="tab-pane active" id="pane-view" style="display: block;">
-      <div class="card-panel">
-        <div class="row g-2">
-          <div class="col-6">
-            <label class="fw-bold text-muted small d-block mb-1">From</label>
-            <select class="form-select form-select-sm fw-bold text-secondary" id="sourceLang">
-              <option value="auto" selected>🌐 Auto Detect</option>
-              <option value="en">🇺🇸 English</option>
-              <option value="vi">🇻🇳 Vietnamese</option>
-              <option value="zh-CN">🇨🇳 Chinese</option>
-              <option value="ja">🇯🇵 Japanese</option>
-              <option value="ko">🇰🇷 Korean</option>
-            </select>
-          </div>
-          <div class="col-6">
-            <label class="fw-bold text-muted small d-block mb-1">To</label>
-            <select class="form-select form-select-sm fw-bold text-primary" id="targetLang">
-              <option value="vi" selected>🇻🇳 Vietnamese</option>
-              <option value="en">🇺🇸 English</option>
-              <option value="zh-CN">🇨🇳 Chinese</option>
-              <option value="ja">🇯🇵 Japanese</option>
-              <option value="ko">🇰🇷 Korean</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div id="ocrSpinner" class="text-center py-2 d-none">
-        <div class="spinner-border spinner-sm text-primary" role="status"></div>
-        <span class="small text-muted ms-2 fw-medium" id="spinnerText">Processing...</span>
-      </div>
-
-      <div class="card-panel">
-        <div class="d-flex justify-content-between align-items-center mb-1">
-          <label class="fw-bold text-secondary">Source Text (OCR)</label>
-          <button class="btn btn-link btn-sm p-0 text-decoration-none fw-bold" id="btnCopySource">📋 Copy</button>
-        </div>
-        <textarea class="form-control" id="sourceText" rows="3" placeholder="Press Alt + T or Alt + R on any webpage to snip region..."></textarea>
-      </div>
-
-      <div class="card-panel">
-        <div class="d-flex justify-content-between align-items-center mb-1">
-          <label class="fw-bold text-success">Translation</label>
-          <button class="btn btn-link btn-sm p-0 text-decoration-none fw-bold text-success" id="btnCopyTrans">📋 Copy</button>
-        </div>
-        <textarea class="form-control bg-light fw-medium" id="translatedText" rows="3" placeholder="Translation results will appear here..." readonly></textarea>
-      </div>
-
-      <div class="d-flex gap-2">
-        <button id="btnManualTranslate" class="btn btn-primary-custom btn-sm flex-grow-1 py-2">Translate</button>
-        <button id="btnClear" class="btn btn-outline-danger btn-sm fw-bold px-3">Clear</button>
-      </div>
-    </div>
-
-    <!-- CONFIG TAB (STYLES) -->
-    <div class="tab-pane" id="pane-config" style="display: none;">
-      <form id="configForm">
-        <div class="card-panel">
-          <h6 class="fw-bold text-primary mb-2">General Settings</h6>
-          <div class="form-check form-switch mb-2">
-            <input class="form-check-input" type="checkbox" id="checkSaveData" checked>
-            <label class="form-check-label fw-medium" for="checkSaveData">Save text history to Storage</label>
-          </div>
-          <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" id="checkShowFrom" checked>
-            <label class="form-check-label fw-medium" for="checkShowFrom">Show "Source Text" on Toast</label>
-          </div>
-        </div>
-
-        <div class="card-panel">
-          <h6 class="fw-bold text-primary mb-2">Toast Background Style</h6>
-          <select class="form-select mb-2" id="cfgBgType">
-            <option value="color" selected>Solid Color + Alpha</option>
-            <option value="gradient">Gradient Color</option>
-            <option value="image">Background Image (URL)</option>
-          </select>
-
-          <div id="boxBgColor" class="p-2 border rounded bg-light mb-2">
-            <div class="row g-2 align-items-center">
-              <div class="col-6">
-                <input type="color" class="form-control form-control-color w-100" id="cfgBgColor" value="#ffffff">
-              </div>
-              <div class="col-6">
-                <label class="small fw-bold">Alpha: <span id="lblAlphaVal" class="text-primary">0.95</span></label>
-                <input type="range" class="form-range" id="cfgBgAlpha" min="0.1" max="1" step="0.05" value="0.95">
-              </div>
-            </div>
-          </div>
-
-          <div id="boxBgGradient" class="p-2 border rounded bg-light mb-2 d-none">
-            <div class="row g-1">
-              <div class="col-5"><input type="color" class="form-control form-control-color w-100" id="cfgGradStart" value="#e0c3fc"></div>
-              <div class="col-5"><input type="color" class="form-control form-control-color w-100" id="cfgGradEnd" value="#8ec5fc"></div>
-              <div class="col-2"><input type="number" class="form-control form-control-sm px-1" id="cfgGradAngle" value="135"></div>
-            </div>
-          </div>
-
-          <div id="boxBgImage" class="p-2 border rounded bg-light mb-2 d-none">
-            <input type="text" class="form-control form-control-sm" id="cfgBgImageUrl" placeholder="Image URL (https://...)">
-          </div>
-        </div>
-
-        <div class="card-panel">
-          <h6 class="fw-bold text-primary mb-2">Uniform Color & Border</h6>
-          
-          <div class="row g-2 mb-2">
-            <div class="col-6">
-              <label class="small text-muted fw-bold">All Text Color</label>
-              <input type="color" class="form-control form-control-color w-100" id="cfgTextColor" value="#0f172a">
-            </div>
-            <div class="col-6">
-              <label class="small text-muted fw-bold">All Border Color</label>
-              <input type="color" class="form-control form-control-color w-100" id="cfgBorderColor" value="#4f46e5">
-            </div>
-          </div>
-
-          <div class="mb-2">
-            <label class="small text-muted fw-bold">Font Family</label>
-            <select class="form-select" id="cfgFontSelect">
-              <option value="Arial, sans-serif" selected>Arial</option>
-              <option value="'Segoe UI', sans-serif">Segoe UI</option>
-              <option value="Roboto, sans-serif">Roboto</option>
-              <option value="'Georgia', serif">Georgia</option>
-              <option value="monospace">Monospace</option>
-              <option value="custom">Custom...</option>
-            </select>
-            <input type="text" class="form-control mt-1 d-none" id="cfgFontCustom" placeholder="Font name (e.g., 'Inter')">
-          </div>
-
-          <div class="row g-2 align-items-center">
-            <div class="col-6">
-              <label class="small text-muted fw-bold">Font Size (<span id="lblFontSizeVal" class="text-primary">13</span>px)</label>
-              <input type="range" class="form-range" id="cfgFontSizeRange" min="10" max="24" value="13">
-              <input type="hidden" id="cfgFontSizeNum" value="13">
-            </div>
-            <div class="col-6">
-              <label class="small text-muted fw-bold">Corner Radius (px)</label>
-              <input type="number" class="form-control form-control-sm" id="cfgBorderRadius" value="10" min="0" max="30">
-            </div>
-          </div>
-        </div>
-
-        <div class="card-panel">
-          <label class="fw-bold text-primary mb-1">Custom OCR Key (Optional)</label>
-          <input type="text" class="form-control" id="cfgOcrKey" placeholder="Default uses auto-rotating keys">
-        </div>
-
-        <button type="submit" class="btn btn-success btn-sm w-100 fw-bold py-2 rounded-3">Save Settings</button>
-      </form>
-    </div>
-
-    <!-- INFO TAB -->
-    <div class="tab-pane" id="pane-info" style="display: none;">
-      <div class="card-panel text-center py-4">
-        <div class="mb-2">
-          <span class="badge bg-primary fs-6 px-3 py-2 rounded-pill">Version 1.2</span>
-        </div>
-        <h6 class="fw-bold mt-2">Screen Snipping Translator</h6>
-        <p class="text-muted small mb-0">The most powerful screen area capture & instant translator extension for your browser.</p>
-        <hr>
-        <small class="text-secondary">Shortcut trigger: <kbd class="bg-dark text-white">Alt + T</kbd> or <kbd class="bg-dark text-white">Alt + R</kbd></small>
-        <hr>
-        <h6 class="fw-bold mt-2">Source</h6>
-        <a href="https://github.com/rioyohoho/Screen-Snipping-Translator">rioyohoho/Screen-Snipping-Translator</a>
-      </div>
-    </div>
-
-  </div>
-
-  <script src="src/scripts.js"></script>
-  <script src="main.js"></script>
+	<ul class="nav nav-pills nav-fill mb-2 bg-white p-1 rounded-3 border">
+		<li class="nav-item"><button class="nav-link active" id="tab-view" data-target="pane-view">Translate</button></li>
+		<li class="nav-item"><button class="nav-link" id="tab-keys" data-target="pane-keys">Keys</button></li>
+		<li class="nav-item"><button class="nav-link" id="tab-styles" data-target="pane-styles">Styles</button></li>
+		<li class="nav-item"><button class="nav-link" id="tab-info" data-target="pane-info">Info</button></li>
+	</ul>
+	<div class="tab-content">
+		<div class="tab-pane active" id="pane-view" style="display:block;">
+			<div class="card-panel">
+				<div class="mb-2">
+					<label class="fw-bold text-muted small d-block mb-1">Engine</label>
+					<select class="form-select form-select-sm fw-bold text-primary" id="transEngine">
+						<option value="ocr" selected>⚡ OCR Space (Free / Default)</option>
+						<option value="gemini">✨ Google Gemini 1.5 Flash</option>
+						<option value="openai">🤖 OpenAI GPT-4o Mini</option>
+					</select>
+				</div>
+				<div class="d-flex align-items-end justify-content-between gap-2">
+					<div class="flex-grow-1">
+						<label class="fw-bold text-muted small d-block mb-1">From</label>
+						<select class="form-select form-select-sm fw-bold text-secondary" id="sourceLang">
+							<option value="auto" selected>🌐 Auto Detect</option>
+							<option value="en">🇺🇸 English</option>
+							<option value="vi">🇻🇳 Vietnamese</option>
+							<option value="zh-CN">🇨🇳 Chinese</option>
+							<option value="ja">🇯🇵 Japanese</option>
+							<option value="ko">🇰🇷 Korean</option>
+						</select>
+					</div>
+					<button type="button" class="btn-swap mb-1" id="btnSwapLang" title="Swap languages">⇄</button>
+					<div class="flex-grow-1">
+						<label class="fw-bold text-muted small d-block mb-1">To</label>
+						<select class="form-select form-select-sm fw-bold text-primary" id="targetLang">
+							<option value="vi" selected>🇻🇳 Vietnamese</option>
+							<option value="en">🇺🇸 English</option>
+							<option value="zh-CN">🇨🇳 Chinese</option>
+							<option value="ja">🇯🇵 Japanese</option>
+							<option value="ko">🇰🇷 Korean</option>
+						</select>
+					</div>
+				</div>
+			</div>
+			<div class="card-panel">
+				<div class="d-flex justify-content-between align-items-center mb-1">
+					<label class="fw-bold text-secondary">Source Text</label>
+					<button class="btn btn-link btn-sm p-0 text-decoration-none fw-bold" id="btnCopySource">📋 Copy</button>
+				</div>
+				<textarea class="form-control" id="sourceText" rows="3" placeholder="Alt + T/R quét | Alt + C trỏ text..."></textarea>
+			</div>
+			<div class="card-panel">
+				<div class="d-flex justify-content-between align-items-center mb-1">
+					<label class="fw-bold text-success">Translation</label>
+					<button class="btn btn-link btn-sm p-0 text-decoration-none fw-bold text-success" id="btnCopyTrans">📋 Copy</button>
+				</div>
+				<textarea class="form-control bg-light fw-medium" id="translatedText" rows="3" placeholder="Kết quả dịch..." readonly></textarea>
+			</div>
+			<div class="d-flex gap-2">
+				<button id="btnFindText" class="btn btn-outline-primary btn-sm fw-bold px-2" title="Find Text (Alt + C)">🔍 Find Text</button>
+				<button id="btnManualTranslate" class="btn btn-primary-custom btn-sm flex-grow-1 py-2">Translate</button>
+				<button id="btnClear" class="btn btn-outline-danger btn-sm fw-bold px-3">Clear</button>
+			</div>
+		</div>
+		<div class="tab-pane" id="pane-keys" style="display:none;">
+			<form id="keyForm">
+				<div class="card-panel">
+					<h6 class="fw-bold text-primary mb-2">API Keys Manager</h6>
+					<div class="mb-3 d-flex align-items-center gap-2">
+						<label class="small text-muted fw-bold text-nowrap">Reset cooldown (s):</label>
+						<input type="number" class="form-control form-control-sm" id="cfgResetSeconds" value="86400" min="60" step="60" style="max-width:110px;">
+						<small class="text-muted">(86400s=24h)</small>
+					</div>
+					<div class="mb-3">
+						<label class="small text-muted fw-bold d-block mb-1">✨ Gemini API Keys</label>
+						<a href="https://aistudio.google.com/app/apikey" target="_blank" class="btn-link small">Quản lý API Keys</a>
+						<div id="list-gemini-keys"></div>
+						<div class="d-flex gap-1 mt-1">
+							<input type="text" class="form-control form-control-sm" id="input-add-gemini" placeholder="Nhập Gemini API key...">
+							<button type="button" class="btn btn-primary btn-sm px-3" id="btn-add-gemini">➕</button>
+						</div>
+					</div>
+					<div class="mb-3">
+						<label class="small text-muted fw-bold d-block mb-1">🤖 OpenAI API Keys</label>
+						<a href="https://platform.openai.com/api-keys" target="_blank" class="btn-link small">Quản lý API Keys</a>
+						<div id="list-openai-keys"></div>
+						<div class="d-flex gap-1 mt-1">
+							<input type="text" class="form-control form-control-sm" id="input-add-openai" placeholder="Nhập OpenAI API key...">
+							<button type="button" class="btn btn-primary btn-sm px-3" id="btn-add-openai">➕</button>
+						</div>
+					</div>
+					<div class="mb-2">
+						<label class="small text-muted fw-bold d-block mb-1">⚡ OCR.Space Keys</label>
+						<a href="https://ocr.space/ocrapi/freekey" target="_blank" class="btn-link small">Quản lý API Keys</a>
+						<div id="list-ocr-keys"></div>
+						<div class="d-flex gap-1 mt-1">
+							<input type="text" class="form-control form-control-sm" id="input-add-ocr" placeholder="Nhập OCR API key...">
+							<button type="button" class="btn btn-primary btn-sm px-3" id="btn-add-ocr">➕</button>
+						</div>
+					</div>
+				</div>
+				<button type="button" id="btnSaveKeys" class="btn btn-success btn-sm w-100 fw-bold py-2 rounded-3">Save Keys</button>
+			</form>
+		</div>
+		<div class="tab-pane" id="pane-styles" style="display:none;">
+			<form id="styleForm">
+				<div class="card-panel">
+					<h6 class="fw-bold text-primary mb-2">General Settings</h6>
+					<div class="form-check form-switch mb-2">
+						<input class="form-check-input" type="checkbox" id="checkSaveData" checked>
+						<label class="form-check-label fw-medium" for="checkSaveData">Lưu lịch sử dịch vào Storage</label>
+					</div>
+					<div class="form-check form-switch">
+						<input class="form-check-input" type="checkbox" id="checkShowFrom" checked>
+						<label class="form-check-label fw-medium" for="checkShowFrom">Hiển thị "Source Text" trên Toast</label>
+					</div>
+				</div>
+				<div class="card-panel">
+					<h6 class="fw-bold text-primary mb-2">Toast Dimensions</h6>
+					<div class="row g-2">
+						<div class="col-6">
+							<label class="small text-muted fw-bold">Width (px)</label>
+							<input type="number" class="form-control form-control-sm" id="cfgToastWidth" value="350" min="200" max="1000">
+						</div>
+						<div class="col-6">
+							<label class="small text-muted fw-bold">Height (px)</label>
+							<input type="number" class="form-control form-control-sm" id="cfgToastHeight" value="200" min="120" max="1000">
+						</div>
+					</div>
+				</div>
+				<div class="card-panel">
+					<h6 class="fw-bold text-primary mb-2">Background Style</h6>
+					<select class="form-select form-select-sm mb-2" id="cfgBgType">
+						<option value="color" selected>Solid Color + Alpha</option>
+						<option value="gradient">Gradient Color</option>
+						<option value="image">Background Image (URL)</option>
+					</select>
+					<div id="boxBgColor" class="p-2 border rounded bg-light mb-2">
+						<div class="row g-2 align-items-center">
+							<div class="col-6">
+								<input type="color" class="form-control form-control-color w-100" id="cfgBgColor" value="#ffffff">
+							</div>
+							<div class="col-6">
+								<label class="small fw-bold">Alpha: <span id="lblAlphaVal" class="text-primary">0.95</span></label>
+								<input type="range" class="form-range" id="cfgBgAlpha" min="0.05" max="1" step="0.05" value="0.95">
+							</div>
+						</div>
+					</div>
+					<div id="boxBgGradient" class="p-2 border rounded bg-light mb-2 d-none">
+						<div class="row g-1 mb-2">
+							<div class="col-6"><input type="color" class="form-control form-control-color w-100" id="cfgGradStart" value="#e0c3fc"></div>
+							<div class="col-6"><input type="color" class="form-control form-control-color w-100" id="cfgGradEnd" value="#8ec5fc"></div>
+						</div>
+						<div>
+							<div class="d-flex justify-content-between">
+								<label class="small fw-bold">Angle (Clockwise):</label>
+								<span id="lblGradAngleVal" class="small fw-bold text-primary">135°</span>
+							</div>
+							<input type="range" class="form-range" id="cfgGradAngle" min="0" max="360" step="5" value="135">
+						</div>
+					</div>
+					<div id="boxBgImage" class="p-2 border rounded bg-light mb-2 d-none">
+						<input type="text" class="form-control form-control-sm" id="cfgBgImageUrl" placeholder="Image URL (https://...)">
+					</div>
+				</div>
+				<div class="card-panel">
+					<h6 class="fw-bold text-primary mb-2">Text & Font</h6>
+					<div class="mb-2">
+						<label class="small text-muted fw-bold">Font Family</label>
+						<select class="form-select form-select-sm" id="cfgFontSelect">
+							<option value="Arial, sans-serif" selected>Arial</option>
+							<option value="'Segoe UI', sans-serif">Segoe UI</option>
+							<option value="Roboto, sans-serif">Roboto</option>
+							<option value="'Georgia', serif">Georgia</option>
+							<option value="monospace">Monospace</option>
+							<option value="custom">Custom...</option>
+						</select>
+						<input type="text" class="form-control form-control-sm mt-1 d-none" id="cfgFontCustom" placeholder="Font name (e.g., Inter)">
+					</div>
+					<div class="row g-2 align-items-center mb-2">
+						<div class="col-6">
+							<label class="small text-muted fw-bold">Text Color</label>
+							<input type="color" class="form-control form-control-color w-100" id="cfgTextColor" value="#0f172a">
+						</div>
+						<div class="col-6">
+							<label class="small text-muted fw-bold">Text Alpha: <span id="lblTextAlphaVal" class="text-primary">1.0</span></label>
+							<input type="range" class="form-range" id="cfgTextAlpha" min="0.1" max="1" step="0.05" value="1">
+						</div>
+					</div>
+					<div>
+						<label class="small text-muted fw-bold">Font Size (<span id="lblFontSizeVal" class="text-primary">13</span>px)</label>
+						<input type="range" class="form-range" id="cfgFontSizeRange" min="10" max="24" value="13">
+					</div>
+				</div>
+				<div class="card-panel">
+					<h6 class="fw-bold text-primary mb-2">Border & Radius</h6>
+					<div class="row g-2 align-items-center mb-2">
+						<div class="col-6">
+							<label class="small text-muted fw-bold">Border Color</label>
+							<input type="color" class="form-control form-control-color w-100" id="cfgBorderColor" value="#00ccff">
+						</div>
+						<div class="col-6">
+							<label class="small text-muted fw-bold">Border Alpha: <span id="lblBorderAlphaVal" class="text-primary">1.0</span></label>
+							<input type="range" class="form-range" id="cfgBorderAlpha" min="0.1" max="1" step="0.05" value="1">
+						</div>
+					</div>
+					<div class="row g-2">
+						<div class="col-6">
+							<label class="small text-muted fw-bold">Border Size (px)</label>
+							<input type="number" class="form-control form-control-sm" id="cfgBorderSize" value="1.5" min="0" max="10" step="0.5">
+						</div>
+						<div class="col-6">
+							<label class="small text-muted fw-bold">Corner Radius (px)</label>
+							<input type="number" class="form-control form-control-sm" id="cfgBorderRadius" value="1" min="0" max="30">
+						</div>
+					</div>
+				</div>
+				<button type="submit" class="btn btn-success btn-sm w-100 fw-bold py-2 rounded-3">Save Styles</button>
+			</form>
+		</div>
+		<div class="tab-pane" id="pane-info" style="display:none;">
+			<div class="card-panel text-center py-4">
+				<div class="mb-2"><span class="badge bg-primary fs-6 px-3 py-2 rounded-pill">Version 2.3</span></div>
+				<h6 class="fw-bold mt-2">Screen Snipping Translator</h6>
+				<p class="text-muted small mb-0">Multi-Key Pool & Dynamic Cooldown System.</p>
+				<hr>
+				<small class="text-secondary">Phím tắt quét: <kbd class="bg-dark text-white">Alt + T</kbd> | <kbd class="bg-dark text-white">Alt + R</kbd></small><br>
+				<small class="text-secondary">Phím tắt Find text: <kbd class="bg-dark text-white">Alt + C</kbd></small>
+			</div>
+		</div>
+	</div>
+	<script src="src/scripts.js"></script>
+	<script src="main.js"></script>
 </body>
 </html>
